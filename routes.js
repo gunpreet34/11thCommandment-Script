@@ -196,7 +196,7 @@ router.post('/getNewsByCategory', function (req, res) {
     }
     console.info(req.body.category);
 
-    News.find({tags: req.body.category}, callback);
+    News.find({tags: req.body.category},{category:0}, callback);
 
 });
 
