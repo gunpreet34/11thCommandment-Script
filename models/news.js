@@ -9,6 +9,10 @@ var newsSchema = new mongoose.Schema({
     url:{
         type:String
     },
+    tags:{
+        type: [String],
+        default : []
+    },
     category:{
         type:String
     },
