@@ -15,11 +15,5 @@ app.use(bodyParser.json());
 app.use('/',require('./routes'));
 
 //listen
-/*app.listen(process.env.PORT,function(err,res){
-    if(err){
-        console.log('Error: ' + err);
-    }
-    console.log(res);
-});*/
 app.listen(process.env.PORT || 3000);
 console.log('Server is up and running');
