@@ -30,7 +30,11 @@ router.post('/login',function (req,res) {
     //Find user with given credentials in the database
     User.findOne({username:username,password:password},function (err,user) {
         if(err){
-            throw err;
+            try{
+                console.log(err);
+            }catch(err){
+                console.log(err);
+            }
         }
         if(!user){
             res.send("Not found");
@@ -58,7 +62,12 @@ router.post('/postNews',function (req,res) {
 
     newNews.save(function (err,savedNews) {
         if(err){
-            throw err;
+            try{
+                res.send("News with same title already exists");
+                return;
+            }catch(err){
+                console.log(err);
+            }
         }
         console.log(savedNews);
         res.send("Save success");
@@ -69,7 +78,12 @@ router.post('/updateNews',function (req,res) {
 
     News.findOneAndUpdate({_id:req.body._id},{$set:{title:req.body.title,description:req.body.description,url:req.body.url,category:req.body.category,tagPrimary:req.body.tagPrimary,tagSecondary:req.body.tagSecondary,imageURL:req.body.imageURL,source:req.body.source,date:req.body.date,count:req.body.count}},{returnOriginal:false},function (err,news) {
         if(err){
-            throw err;
+            try{
+                res.send("Error updating. Title should be unique");
+                return;
+            }catch(err){
+                console.log(err);
+            }
         }
         if(!news){
             res.send("Not found");
@@ -83,7 +97,12 @@ router.post('/increaseNewsCounter',function (req,res) {
 
     News.findOneAndUpdate({title:req.body.title},{$set: {count:req.body.count}},{returnOriginal:false},function (err,news) {
         if(err){
-            throw err;
+            try{
+                res.send("Error in connection");
+                return;
+            }catch(err){
+                console.log(err);
+            }
         }
         if(!news){
             res.send("Not found");
@@ -97,7 +116,12 @@ router.post('/increaseNewsCounter',function (req,res) {
 
     News.findOneAndUpdate({title:req.body.title},{$set: {count:req.body.count}},{returnOriginal:false},function (err,news) {
         if(err){
-            throw err;
+            try{
+                res.send("Error in connection");
+                return;
+            }catch(err){
+                console.log(err);
+            }
         }
         if(!news){
             res.send("Not found");
