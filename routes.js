@@ -144,7 +144,12 @@ router.post('/deleteNews',function (req,res) {
                 console.log(err);
             }
         }
-        res.send("Successfully deleted");
+        if(results.n > 0){
+            res.send("Successfully deleted");
+        }else{
+            res.send("No such record found");
+        }
+
     })
 });
 
