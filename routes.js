@@ -59,7 +59,7 @@ router.post('/postNews', function (req, res) {
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
     newNews.count = 0;
-    newNews.tags = newNews.split(',').map(k => k.toLowerCase());
+    newNews.tags = req.body.category.split(',').map(k => k.toLowerCase());
     newNews.save(function (err, savedNews) {
         if (err) {
             try {
@@ -181,16 +181,22 @@ router.get('/getNews', function (req, res) {
     });
 });
 
-router.post('/getByCategory', function (req, res) {
+router.post('/getNewsByCategory', function (req, res) {
     let callback = (err, newsArray) => {
+        var data = {success: "0", data: ''};
         if (err) {
-            res.send(err);
+            console.info(err);
+            res.send(data)
         } else {
-            res.send(newsArray);
+            console.log(newsArray);
+            data.success = "1";
+            data.data = newsArray;
+            res.send(data);
         }
     }
+    console.info(req.body.category);
 
-    News.find({tags: {"$eleMatch": req.body.category}}, callback);
+    News.find({tags: req.body.category}, callback);
 
 });
 
