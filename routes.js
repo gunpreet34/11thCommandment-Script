@@ -126,12 +126,29 @@ router.post('/increaseNewsCounter',function (req,res) {
         if(!news){
             res.send("Not found");
         }else {
-            console.log("Successfully updated")
+            console.log("Successfully updated");
         }
     });
 });
 
-//
+//Delete a news
+router.post('/deleteNews',function (req,res) {
+
+    News.deleteOne({_id:req.body._id},function (err,results) {
+        if(err){
+            try{
+                console.log("Error");
+                res.send(err);
+                return;
+            }catch(err){
+                console.log(err);
+            }
+        }
+        res.send("Successfully deleted");
+    })
+});
+
+//Get all news
 router.get('/getNews',function (req,res) {
     News.find({},function (err,news) {
         var data = {success:"0",data:''};
