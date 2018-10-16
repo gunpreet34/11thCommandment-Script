@@ -107,6 +107,7 @@ router.post('/increaseNewsCounter',function (req,res) {
     });
 });
 
+//
 router.get('/getNews',function (req,res) {
     News.find({},function (err,news) {
         var data = {success:"0",data:''};
