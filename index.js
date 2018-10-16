@@ -15,5 +15,11 @@ app.use(bodyParser.json());
 app.use('/',require('./routes'));
 
 //listen
-app.listen(8080 || process.env.PORT);
+/*app.listen(process.env.PORT,function(err,res){
+    if(err){
+        console.log('Error: ' + err);
+    }
+    console.log(res);
+});*/
+app.set(process.env.PORT || 3000);
 console.log('Server is up and running');
