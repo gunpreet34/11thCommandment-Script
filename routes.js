@@ -226,7 +226,7 @@ router.post('/searchNewsByTitle', function (req, res) {
 
 //Get news by title
 router.post('/getNewsByTitle',function (req,res) {
-   News.findOne({title:req.body.title},function (err,news) {
+   News.findOne({title:req.body.title},{titleSearch:0,tags:0,date:0,count:0},function (err,news) {
        var data = {success: "0", data: ''};
        if(err){
            res.send(data);
