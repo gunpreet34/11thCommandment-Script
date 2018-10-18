@@ -50,6 +50,7 @@ router.post('/postNews', function (req, res) {
 
     var newNews = News();
     newNews.title = req.body.title;
+    newNews.titleSearch = req.body.title.split(' ').map(k => k.toLowerCase());
     newNews.description = req.body.description;
     newNews.url = req.body.url;
     newNews.category = req.body.category;
@@ -79,9 +80,11 @@ router.post('/updateNews', function (req, res) {
     News.findOneAndUpdate({_id: req.body._id}, {
         $set: {
             title: req.body.title,
+            titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),
             description: req.body.description,
             url: req.body.url,
             category: req.body.category,
+            tags:req.body.category.split(' ').map(k => k.toLowerCase()),
             tagPrimary: req.body.tagPrimary,
             tagSecondary: req.body.tagSecondary,
             imageURL: req.body.imageURL,
@@ -181,6 +184,7 @@ router.get('/getNews', function (req, res) {
     });
 });
 
+//Get news by category
 router.post('/getNewsByCategory', function (req, res) {
     let callback = (err, newsArray) => {
         var data = {success: "0", data: ''};
@@ -196,10 +200,44 @@ router.post('/getNewsByCategory', function (req, res) {
     }
     console.info(req.body.category);
 
-    News.find({tags: req.body.category},{category:0}, callback);
+    News.find({tags: req.body.category.toLowerCase()},{category:0}, callback);
 
 });
 
+//Search news using title
+router.post('/searchNewsByTitle', function (req, res) {
+    let callback = (err, newsArray) => {
+        var data = {success: "0", data: ''};
+        if (err) {
+            console.info(err);
+            res.send(data)
+        } else {
+            console.log(newsArray);
+            data.success = "1";
+            data.data = newsArray;
+            res.send(data);
+        }
+    }
+    console.info(req.body.category);
+
+    News.find({titleSearch: req.body.title},{category:0}, callback);
+
+});
+
+//Get news by title
+router.post('/getNewsByTitle',function (req,res) {
+   News.findOne({title:req.body.title},function (err,news) {
+       var data = {success: "0", data: ''};
+       if(err){
+           res.send(data);
+       }else{
+           console.log(news);
+           data.data = news;
+           data.success = 1;
+           res.send(data);
+       }
+   })
+});
 
 module.exports = router;
 

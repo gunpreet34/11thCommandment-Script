@@ -3,6 +3,11 @@ var newsSchema = new mongoose.Schema({
     title:{
         type:String
     },
+    titleSearch:{
+        type:[String],
+        default: []
+    }
+    ,
     description:{
         type:String
     },
