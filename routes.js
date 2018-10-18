@@ -220,7 +220,7 @@ router.post('/searchNewsByTitle', function (req, res) {
     }
     console.info(req.body.category);
 
-    News.find({titleSearch: req.body.title},{category:0}, callback);
+    News.find({titleSearch: req.body.title},{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, callback);
 
 });
 
