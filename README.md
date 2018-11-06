@@ -3,7 +3,7 @@ Various routes:
 For user registration
 
 /register -> post request
-send - username,password
+send - username(unique),password,token(unique)
 response - string
 
 /login -> post request
@@ -13,7 +13,7 @@ response - string ("Found","Not Found")
 For news
 
 /postNews -> post request
-send - title,description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
+send - title(unique),description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
 extras - tags(for category splitting),titleSearch(for title splitting into words)
 response - string
 
@@ -48,7 +48,7 @@ response - json - {success,data} - where success is integer and data is in json 
 For bookmarking news
 
 /bookmark
-send - username,news_id
+send - username,news_id(unique)
 response - string
 
 /getBookmarkedNews
