@@ -17,19 +17,9 @@ send - title,description,url,category(seperated by ','),tagPrimary,tagSecondary,
 extras - tags(for category splitting),titleSearch(for title splitting into words)
 response - string
 
-/updateNews -> post request
-find news via - id
-send - title,description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
-extras - tags(for category splitting),titleSearch(for title splitting into words)
-response - string
-
-/increaseNewsCounter -> post request
-send - title
-response - string
-
 /deleteNews -> post request
-send - id
-response - stirng
+send - _id
+response - string
 
 /getNews -> get request - get all news
 response - json - {success,data} - where success is integer and data is json
@@ -45,6 +35,50 @@ response - json - {success,data} - where success is integer and data is in json 
 /getNewsByTitle -> get request
 response - json - {success,data} - where success is integer and data is in json - returns news by title - returns news except the parameters: tags,titleSearch,date,count
 
+For updating news
+
+/updateNews -> post request
+find news via - id
+send - title,description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
+extras - tags(for category splitting),titleSearch(for title splitting into words)
+response - string
+
+/updateNewsByTitle -> post request
+send - _id,title
+response - string
+
+/updateNewsByDescription -> post request
+send - _id,description
+response - string
+
+/updateNewsByUrl -> post request
+send - _id,url
+response - string
+
+/updateNewsByCategory -> post request
+send - _id,category
+response - string
+
+/updateNewsByTagPrimary -> post request
+send - _id,tagPrimary
+response - string
+
+/updateNewsByTagSecondary -> post request
+send - _id,tagSecondary
+response - string
+
+/updateNewsByImageUrl -> post request
+send - _id,imageURL
+response - string
+
+/updateNewsBySource -> post request
+send - _id,source
+response - string
+
+/updateNewsByCounter -> post request
+send - _id,counter
+response - string
+
 For bookmarking news
 
 /bookmark
@@ -54,3 +88,7 @@ response - string
 /getBookmarkedNews
 send - username
 response - json - {success,data} - where success is integer and data is in json - returns news by id
+
+/deleteBookmark
+send - _id
+response - string

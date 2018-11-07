@@ -34,7 +34,8 @@ var newsSchema = new mongoose.Schema({
         type:String
     },
     count:{
-        type:Number
+        type:Number,
+        default:0
     },
     date:{
         type:String

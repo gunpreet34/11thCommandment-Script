@@ -50,7 +50,7 @@ router.post('/login', function (req, res) {
     });
 });
 
-//Post-news post request
+//Post-news
 router.post('/postNews', function (req, res) {
 
     var newNews = News();
@@ -64,7 +64,6 @@ router.post('/postNews', function (req, res) {
     newNews.imageURL = req.body.imageURL;
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
-    newNews.count = 0;
     newNews.tags = req.body.category.split(',').map(k => k.toLowerCase());
     newNews.save(function (err, savedNews) {
         if (err) {
@@ -80,6 +79,7 @@ router.post('/postNews', function (req, res) {
     });
 });
 
+//Update news - all fields
 router.post('/updateNews', function (req, res) {
 
     News.findOneAndUpdate({_id: req.body._id}, {
@@ -112,10 +112,206 @@ router.post('/updateNews', function (req, res) {
         }
     });
 });
-//Maintaining counter for Top Stories
-router.post('/increaseNewsCounter', function (req, res) {
 
-    News.findOneAndUpdate({title: req.body.title}, {$set: {count: req.body.count}}, {returnOriginal: false}, function (err, news) {
+//Update news title
+router.post('/updateNewsByTitle', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            title: req.body.title,
+            titleSearch: req.body.title.split(' ').map(k => k.toLowerCase())
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                res.send("Error updating. Title should be unique");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news description
+router.post('/updateNewsByDescription', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            description: req.body.description
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news url
+router.post('/updateNewsByUrl', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            url: req.body.url
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news category
+router.post('/updateNewsByCategory', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            category: req.body.category,
+            tags:req.body.category.split(' ').map(k => k.toLowerCase())
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news tagPrimary
+router.post('/updateNewsByTagPrimary', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            tagPrimary: req.body.tagPrimary
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news tagSecondary
+router.post('/updateNewsByTagSecondary', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            tagSecondary: req.body.tagSecondary
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news imageUrl
+router.post('/updateNewsByImageUrl', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            imageURL: req.body.imageURL
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Update news source
+router.post('/updateNewsBySource', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id}, {
+        $set: {
+            source: req.body.source
+        }
+    }, {returnOriginal: false}, function (err, news) {
+        if (err) {
+            try {
+                console.log("Error updating news");
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (!news) {
+            res.send("Not found");
+        } else {
+            console.log("Successfully updated");
+        }
+    });
+});
+
+//Updating news time counter
+router.post('/updateNewsByCounter', function (req, res) {
+
+    News.findOneAndUpdate({_id: req.body._id},
+        {$set: {count: req.body.count}}, {returnOriginal: false}, function (err, news) {
         if (err) {
             try {
                 res.send("Error in connection");
@@ -131,6 +327,8 @@ router.post('/increaseNewsCounter', function (req, res) {
         }
     });
 });
+
+
 //Bookmarking
 router.post('/bookmark', function (req, res) {
 
@@ -176,6 +374,28 @@ router.post('/getBookmarkedNews',function (req, res) {
     });
 });
 
+//Delete bookmark
+router.post('/deleteBookmark', function (req, res) {
+
+    News.deleteOne({_id: req.body._id}, function (err, results) {
+        if (err) {
+            try {
+                console.log("Error");
+                res.send(err);
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (results.n > 0) {
+            res.send("Successfully deleted");
+        } else {
+            console.log("Already un bookmarked");
+        }
+
+    })
+});
+
 //Delete a news
 router.post('/deleteNews', function (req, res) {    
 
@@ -206,7 +426,7 @@ router.get('/getNews', function (req, res) {
             console.log(err);
             res.send(data);
         }
-        console.log(news);
+        //console.log(news);
         data.success = "1";
         data.data = news;
         res.send(data);
