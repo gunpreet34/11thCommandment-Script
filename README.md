@@ -44,3 +44,13 @@ response - json - {success,data} - where success is integer and data is in json 
 
 /getNewsByTitle -> get request
 response - json - {success,data} - where success is integer and data is in json - returns news by title - returns news except the parameters: tags,titleSearch,date,count
+
+For bookmarking news
+
+/bookmark
+send - username,news_id
+response - string
+
+/getBookmarkedNews
+send - username
+response - json - {success,data} - where success is integer and data is in json - returns news by id

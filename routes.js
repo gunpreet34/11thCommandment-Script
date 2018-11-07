@@ -153,13 +153,10 @@ router.post('/bookmark', function (req, res) {
                         console.log(err);
                     }
                 }
-                //console.log("Bookmarking \n "+ bookmarkedNews);
                 res.send("Bookmarked");
             });
-            //console.log("bookmarked news inside= \n" + bookmarkedNews.news);
         }
     });
-    //console.log("bookmarked news = \n" + bookmarkedNews.news);
 
 });
 
