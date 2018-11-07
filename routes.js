@@ -3,20 +3,25 @@ var router = express.Router();
 
 var User = require('./models/user');
 var News = require('./models/news');
+var BookmarkedNews = require('./models/bookmarkedNews');
 
 //Register post request
 router.post('/register', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
-
+    var token = req.body.token;
     var newUser = User();
     newUser.username = username;
     newUser.password = password;
-
+    newUser.token = token;
     //Call Mongoose inbuilt save method
     newUser.save(function (err, savedUser) {
-        if (err) {
-            throw err;
+        if (err) { 
+            try{
+                res.send(err);
+            }catch(err){
+                console.log(err);
+            }
         }
         console.log(savedUser);
         res.send("Save success");
@@ -127,27 +132,55 @@ router.post('/increaseNewsCounter', function (req, res) {
     });
 });
 //Bookmarking
-router.post('/increaseNewsCounter', function (req, res) {
+router.post('/bookmark', function (req, res) {
 
-    News.findOneAndUpdate({title: req.body.title}, {$set: {count: req.body.count}}, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                res.send("Error in connection");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
+    var bookmarkedNews = BookmarkedNews();
+    bookmarkedNews.username = req.body.username;
+    console.log("news id= " + req.body.news_id);
+    News.findOne({_id:req.body.news_id},function (err, news) {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Found news");
+            bookmarkedNews.news = news;
+            bookmarkedNews.save(function (err, bookmarkedNews) {
+                if (err) {
+                    try {
+                        console.log(err);
+                        res.send("Already bookmarked");
+                        return;
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+                //console.log("Bookmarking \n "+ bookmarkedNews);
+                res.send("Bookmarked");
+            });
+            //console.log("bookmarked news inside= \n" + bookmarkedNews.news);
         }
-        if (!news) {
-            res.send("Not found");
+    });
+    //console.log("bookmarked news = \n" + bookmarkedNews.news);
+
+});
+
+//Get news bookmarked by user
+router.post('/getBookmarkedNews',function (req, res) {
+    BookmarkedNews.find({username:req.body.username},{username:0},function (err,bookmarkedNewsArray) {
+        var data = {success: "0", data: ''};
+        if (err) {
+            console.info(err);
+            res.send(data)
         } else {
-            console.log("Successfully updated");
+            console.log(bookmarkedNewsArray);
+            data.success = "1";
+            data.data = bookmarkedNewsArray;
+            res.send(data);
         }
     });
 });
 
 //Delete a news
-router.post('/deleteNews', function (req, res) {
+router.post('/deleteNews', function (req, res) {    
 
     News.deleteOne({_id: req.body._id}, function (err, results) {
         if (err) {
@@ -197,7 +230,7 @@ router.post('/getNewsByCategory', function (req, res) {
             data.data = newsArray;
             res.send(data);
         }
-    }
+    };
     console.info(req.body.category);
 
     News.find({tags: req.body.category.toLowerCase()},{category:0}, callback);
