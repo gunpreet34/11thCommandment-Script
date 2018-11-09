@@ -89,3 +89,7 @@ response - string
 /getBookmarkedNews
 send - username
 response - json - {success,data} - where success is integer and data is in json - returns news by id
+
+For getting categories
+/getCategories
+response - json - {success,data} - where success is integer and data is json

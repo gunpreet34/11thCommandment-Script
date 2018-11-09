@@ -4,6 +4,7 @@ var router = express.Router();
 var User = require('./models/user');
 var News = require('./models/news');
 var BookmarkedNews = require('./models/bookmarkedNews');
+var Cat = require('./models/category');
 
 //Register post request
 router.post('/register', function (req, res) {
@@ -50,6 +51,22 @@ router.post('/login', function (req, res) {
     });
 });
 
+//Get Categories
+router.get('/getCategories', function (req, res) {
+    Cat.find({}, function (err, cats) {
+        var data = {success: "0", data: ''};
+        if (err) {
+            console.log(err);
+            res.send(data);
+        }
+        //console.log(news);
+        data.success = "1";
+        data.data = cats;
+        res.send(data);
+        //console.log(data)
+    });
+});
+
 //Post-news
 router.post('/postNews', function (req, res) {
 
@@ -64,7 +81,23 @@ router.post('/postNews', function (req, res) {
     newNews.imageURL = req.body.imageURL;
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
-    newNews.tags = req.body.category.split(',').map(k => k.toLowerCase());
+    newNews.tags = req.body.category.split('  ').map(k => k.toLowerCase());
+
+    newNews.tags.forEach((cat) => {
+        var newCat = Cat();
+        newCat.category = cat;
+        newCat.save(function (err, savedCat) {
+            if(err){
+                try {
+                    console.log(err);
+                }catch(err){
+                    console.log(err);
+                }
+                console.log(savedCat);
+            }
+        });
+    });
+
     newNews.save(function (err, savedNews) {
         if (err) {
             try {
@@ -89,7 +122,7 @@ router.post('/updateNews', function (req, res) {
             description: req.body.description,
             url: req.body.url,
             category: req.body.category,
-            tags:req.body.category.split(' ').map(k => k.toLowerCase()),
+            tags:req.body.category.split('  ').map(k => k.toLowerCase(),k => k.trim()),
             tagPrimary: req.body.tagPrimary,
             tagSecondary: req.body.tagSecondary,
             imageURL: req.body.imageURL,

@@ -5,7 +5,15 @@ var userSchema = new mongoose.Schema({
         unique:true,
         index:true
     },
-    token:{
+    fb_token:{
+        type:String,
+        unique:true
+    },
+    gmail_token:{
+        type:String,
+        unique:true
+    },
+    mobile:{
         type:String,
         unique:true
     },
