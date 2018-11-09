@@ -81,10 +81,13 @@ router.post('/postNews', function (req, res) {
     newNews.imageURL = req.body.imageURL;
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
-    newNews.tags = req.body.category.split('  ').map(k => k.toLowerCase());
+    newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
 
     newNews.tags.forEach((cat) => {
         var newCat = Cat();
+        if(cat.charAt(cat.length) == ','){
+            cat = cat.substr(0,cat.length-2);
+        }
         newCat.category = cat;
         newCat.save(function (err, savedCat) {
             if(err){
@@ -122,7 +125,7 @@ router.post('/updateNews', function (req, res) {
             description: req.body.description,
             url: req.body.url,
             category: req.body.category,
-            tags:req.body.category.split('  ').map(k => k.toLowerCase(),k => k.trim()),
+            tags:req.body.category.split(', ').map(k => k.toLowerCase()),
             tagPrimary: req.body.tagPrimary,
             tagSecondary: req.body.tagSecondary,
             imageURL: req.body.imageURL,

@@ -4,6 +4,8 @@ var userSchema = new mongoose.Schema({
         type:String,
         unique:true,
         index:true
+    },access:{
+        type:Number
     },
     fb_token:{
         type:String,
