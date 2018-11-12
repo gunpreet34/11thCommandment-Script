@@ -161,7 +161,7 @@ router.post('/updateNews', function (req, res) {
                         }
                     });
                 });
-                console.log("Successfully updated");
+                res.send("Successfully updated");
             }
         }
     });
