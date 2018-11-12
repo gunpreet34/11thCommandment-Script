@@ -140,11 +140,29 @@ router.post('/updateNews', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
+                    var newCat = Cat();
+                    if(cat.charAt(cat.length) == ','){
+                        cat = cat.substr(0,cat.length-2);
+                    }
+                    newCat.category = cat;
+                    newCat.save(function (err, savedCat) {
+                        if(err){
+                            try {
+                                console.log(err);
+                            }catch(err){
+                                console.log(err);
+                            }
+                            console.log(savedCat);
+                        }
+                    });
+                });
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -165,11 +183,12 @@ router.post('/updateNewsByTitle', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -189,11 +208,12 @@ router.post('/updateNewsByDescription', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -238,11 +258,29 @@ router.post('/updateNewsByCategory', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
+                    var newCat = Cat();
+                    if(cat.charAt(cat.length) == ','){
+                        cat = cat.substr(0,cat.length-2);
+                    }
+                    newCat.category = cat;
+                    newCat.save(function (err, savedCat) {
+                        if(err){
+                            try {
+                                console.log(err);
+                            }catch(err){
+                                console.log(err);
+                            }
+                            console.log(savedCat);
+                        }
+                    });
+                });
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -262,11 +300,12 @@ router.post('/updateNewsByTagPrimary', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -286,11 +325,12 @@ router.post('/updateNewsByTagSecondary', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -310,11 +350,12 @@ router.post('/updateNewsByImageUrl', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -334,11 +375,12 @@ router.post('/updateNewsBySource', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
@@ -355,11 +397,12 @@ router.post('/updateNewsByCounter', function (req, res) {
             } catch (err) {
                 console.log(err);
             }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated")
+        }else {
+            if (!news) {
+                res.send("Not found");
+            } else {
+                console.log("Successfully updated");
+            }
         }
     });
 });
