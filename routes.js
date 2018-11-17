@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var sortJson = require('sort-json-array');
 
 var User = require('./models/user');
 var News = require('./models/news');
@@ -562,6 +563,7 @@ router.get('/getNews', function (req, res) {
         }
         //console.log(news);
         data.success = "1";
+        news = sortJson(news,'date','des');
         data.data = news;
         res.send(data);
         //console.log(data)
