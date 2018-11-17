@@ -537,7 +537,7 @@ router.post('/deleteNews', function (req, res) {
                 console.log(err);
             }
         }
-        if (results.n > 0) {
+        /*if (results.n > 0) {
             News.findOne({_id:req.body._id},{title:0,description:0,url:0,category:0,source:0,imageURL:0,tagPrimary:0,tagSecondary:0,titleSearch:0,date:0,count:0},function (err,news) {
                 if(err){
                     res.send(data);
@@ -548,7 +548,7 @@ router.post('/deleteNews', function (req, res) {
             res.send("Successfully deleted");
         } else {
             res.send("No such record found");
-        }
+        }*/
 
     })
 });
