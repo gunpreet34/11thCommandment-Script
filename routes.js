@@ -54,7 +54,7 @@ router.post('/login', function (req, res) {
 //Get Categories
 router.get('/getCategories', function (req, res) {
     Cat.find({}, function (err, cats) {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.log(err);
             res.send(data);
@@ -84,19 +84,43 @@ router.post('/postNews', function (req, res) {
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
 
     newNews.tags.forEach((cat) => {
-        var newCat = Cat();
-        if(cat.charAt(cat.length) == ','){
-            cat = cat.substr(0,cat.length-2);
-        }
-        newCat.category = cat;
-        newCat.save(function (err, savedCat) {
-            if(err){
+        Cat.findOneAndUpdate({category: req.body.category}, {
+            $inc: {
+                count:1
+            }
+        }, {returnOriginal: false}, function (err, category) {
+            if (err) {
                 try {
-                    console.log(err);
-                }catch(err){
+                    console.send("Error incrementing category count");
+                    return;
+                } catch (err) {
                     console.log(err);
                 }
-                console.log(savedCat);
+            }else {
+                if (!category) {
+                    console.log("Not found");
+                } else {
+                    if(cat == ""){
+                        console.log("Empty Category. Not adding");
+                    }else {
+                        let newCat = Cat();
+                        if (cat.charAt(cat.length) == ',') {
+                            cat = cat.substr(0, cat.length - 2);
+                        }
+                        newCat.category = cat;
+
+                        newCat.save(function (err, savedCat) {
+                            if (err) {
+                                try {
+                                    console.log(err);
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                                console.log(savedCat);
+                            }
+                        });
+                    }
+                }
             }
         });
     });
@@ -105,6 +129,7 @@ router.post('/postNews', function (req, res) {
         if (err) {
             try {
                 res.send("News with same title already exists");
+                console.log(err);
                 return;
             } catch (err) {
                 console.log(err);
@@ -136,7 +161,6 @@ router.post('/updateNews', function (req, res) {
         if (err) {
             try {
                 res.send("Error updating. Title should be unique");
-                return;
             } catch (err) {
                 console.log(err);
             }
@@ -145,19 +169,43 @@ router.post('/updateNews', function (req, res) {
                 res.send("Not found");
             } else {
                 req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
-                    var newCat = Cat();
-                    if(cat.charAt(cat.length) == ','){
-                        cat = cat.substr(0,cat.length-2);
-                    }
-                    newCat.category = cat;
-                    newCat.save(function (err, savedCat) {
-                        if(err){
+                    Cat.findOneAndUpdate({category: req.body.category}, {
+                        $inc: {
+                            count:1
+                        }
+                    }, {returnOriginal: false}, function (err, category) {
+                        if (err) {
                             try {
-                                console.log(err);
-                            }catch(err){
+                                console.send("Error incrementing category count");
+                                return;
+                            } catch (err) {
                                 console.log(err);
                             }
-                            console.log(savedCat);
+                        }else {
+                            if (!category) {
+                                console.log("Not found");
+                            } else {
+                                if(cat == ""){
+                                    console.log("Empty Category. Not adding");
+                                }else {
+                                    let newCat = Cat();
+                                    if (cat.charAt(cat.length) == ',') {
+                                        cat = cat.substr(0, cat.length - 2);
+                                    }
+                                    newCat.category = cat;
+
+                                    newCat.save(function (err, savedCat) {
+                                        if (err) {
+                                            try {
+                                                console.log(err);
+                                            } catch (err) {
+                                                console.log(err);
+                                            }
+                                            console.log(savedCat);
+                                        }
+                                    });
+                                }
+                            }
                         }
                     });
                 });
@@ -489,6 +537,13 @@ router.post('/deleteNews', function (req, res) {
             }
         }
         if (results.n > 0) {
+            News.findOne({_id:req.body._id},{title:0,description:0,url:0,category:0,source:0,imageURL:0,tagPrimary:0,tagSecondary:0,titleSearch:0,date:0,count:0},function (err,news) {
+                if(err){
+                    res.send(data);
+                }else{
+                    console.log("Found news" + news.tags);
+                }
+            });
             res.send("Successfully deleted");
         } else {
             res.send("No such record found");
@@ -530,6 +585,7 @@ router.get('/getNewsByCategory/:category', function (req, res) {
     console.info(req.body.category);
 
     News.find({tags: req.params.category.toLowerCase()},{category:0}, callback);
+    News.find({tags: req.params.category.toLowerCase()},{category:0}, callback);
 
 });
 
@@ -565,7 +621,7 @@ router.post('/getNewsByTitle',function (req,res) {
            data.success = 1;
            res.send(data);
        }
-   })
+   });
 });
 
 module.exports = router;

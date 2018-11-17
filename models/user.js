@@ -25,9 +25,6 @@ var userSchema = new mongoose.Schema({
     name:{
         type:String
     },
-    categories:{
-        type:Array
-    },
     bookmarkedNews:{
         type:Array
     }

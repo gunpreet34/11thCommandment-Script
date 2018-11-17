@@ -3,6 +3,11 @@ var catSchema = new mongoose.Schema({
     category:{
         type:String,
         unique:true
+    },count:{
+        type:Number,
+        default:0
+    },imageURL:{
+        type:String
     }
 });
 

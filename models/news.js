@@ -39,6 +39,10 @@ var newsSchema = new mongoose.Schema({
     },
     date:{
         type:String
+    },
+    verify:{
+        type:Boolean,
+        default:false
     }
 });
 
