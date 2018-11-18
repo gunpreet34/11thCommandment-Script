@@ -486,6 +486,38 @@ router.post('/bookmark', function (req, res) {
 
 });
 
+//Multiple bookmarks
+router.post('/bookmarkMultiple', function (req, res) {
+
+    var bookmarkedNews = BookmarkedNews();
+    bookmarkedNews.username = req.body.username;
+    let news_array = req.body.news_array;
+    for(let news_id in news_array){
+        console.log("news id= " + news_id);
+        News.findOne({_id:news_id},function (err, news) {
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Found news");
+                bookmarkedNews.news = news;
+                bookmarkedNews.save(function (err, bookmarkedNews) {
+                    if (err) {
+                        try {
+                            console.log(err);
+                            res.send("Already bookmarked");
+                            return;
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                    res.send("Bookmarked");
+                });
+            }
+        });
+    }
+
+});
+
 //Get news bookmarked by user
 router.post('/getBookmarkedNews',function (req, res) {
     BookmarkedNews.find({username:req.body.username},{username:0},function (err,bookmarkedNewsArray) {
