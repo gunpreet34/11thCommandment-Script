@@ -727,7 +727,6 @@ router.get('/getNewsByCategory/:category', function (req, res) {
     console.info(req.body.category);
 
     News.find({tags: req.params.category.toLowerCase()},{category:0}, callback);
-    News.find({tags: req.params.category.toLowerCase()},{category:0}, callback);
 
 });
 
@@ -749,6 +748,21 @@ router.post('/searchNewsByTitle', function (req, res) {
 
     News.find({titleSearch: {$regex: '^' + req.body.title}},{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, callback);
 
+});
+
+//Get news by id
+router.post('/getNewsById/:id',function (req,res) {
+    News.findOne({_id:req.params.id},{titleSearch:0,count:0},function (err,news) {
+        var data = {success: "0", data: ''};
+        if(err){
+            res.send(data);
+        }else{
+            console.log(news);
+            data.data = news;
+            data.success = 1;
+            res.send(data);
+        }
+    });
 });
 
 //Get news by title
