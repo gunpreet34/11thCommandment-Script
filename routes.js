@@ -8,6 +8,101 @@ var BookmarkedNews = require('./models/bookmarkedNews');
 var Cat = require('./models/category');
 
 //Register post request
+/*router.get('/registerAdmin',function (req, res) {
+    let html = "<!DOCTYPE html>\n" +
+        "<html lang=\"en\">\n" +
+        "\n" +
+        "<head>\n" +
+        "  <title> Register Form </title>\n" +
+        "    <meta charset=\"utf-8\">\n" +
+        "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" +
+        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
+        "    <meta name=\"description\" content=\"\">\n" +
+        "    <meta name=\"author\" content=\"\">\n" +
+        "\n" +
+        "    <!-- Bootstrap Core CSS -->\n" +
+        "    <link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\">\n" +
+        "\t<style>\n" +
+        "\tp{\n" +
+        "\t\tfont-family: 'Roboto', sans-serif;\n" +
+        "      font-size: 48px;\n" +
+        "\t  text-align:center;\n" +
+        "\t}\n" +
+        "\t</style>\n" +
+        "</head>\n" +
+        "\n" +
+        "<body>\n" +
+        "\n" +
+        "                        <!-- MY CODE -->\n" +
+        "                        <form action='/registerSuccess' method=\"post\" enctype=\"multipart/form-data\">\n" +
+        "                        \n" +
+        "                          <div class=\"container\" style=\"margin:auto; padding:50px;\">\n" +
+        "\t\t\t\t\t\t\t<p>Enter The Details</p>\n" +
+        "                            <div class=\"row\">\n" +
+        "                              <div class=\"col-lg-6\">\n" +
+        "                                <div class=\"form-group\">\n" +
+        "                                  <label>Name</label>\n" +
+        "                                  <input class=\"form-control\" type=\"text\" name=\"name\" placeholder=\"Enter name\" required>\n" +
+        "                                </div>\n" +
+        "\t\t\t\t\t\t\t\t<div class=\"form-group\">\n" +
+        "                                  <label>User access level</label>\n" +
+        "                                  <select class=\"form-control\" name=\"access\">\n" +
+        "\t\t\t\t\t\t\t\t\t  <option value = \"Editor\">Editor</option>\n" +
+        "\t\t\t\t\t\t\t\t\t  <option value = \"Admin\">Admin</option>\n" +
+        "\t\t\t\t\t\t\t\t\t  </select>\n" +
+        "                                </div>\n" +
+        "\t\t\t\t\t\t\t\t\n" +
+        "\t\t\t\t\t\t\t\t<div class=\"form-group\">\n" +
+        "                                  <label>Password</label>\n" +
+        "                                  <input class=\"form-control\" type=\"password\" name=\"password\" placeholder=\"Enter Password\" required>\n" +
+        "                                </div>\n" +
+        "\t\t\t\t\t\t\t\t<div class=\"form-group\">\n" +
+        "                                  <label>Verify Password</label>\n" +
+        "                                  <input class=\"form-control\" type=\"password\" name=\"rpt_password\" placeholder=\"Re-Enter Password\" required>\n" +
+        "                                </div>\n" +
+        "                             \n" +
+        "                           </div>\n" +
+        "\t\t\t\t\t\t   \n" +
+        "\t\t\t\t\t\t   <div class=\"col-lg-6\">\n" +
+        "\n" +
+        "\t\t\t\t\t\t\t <div class=\"form-group\">\n" +
+        "                                  <label>Mobile Number</label>\n" +
+        "                                  <input class=\"form-control\" type=\"number\" name=\"mobile\" placeholder=\"Enter Mobile Number\" required>\n" +
+        "                                </div>\n" +
+        "                                <div class=\"form-group\">\n" +
+        "                                  <label>Email-ID</label>\n" +
+        "                                  <input class=\"form-control\" type=\"email\" name=\"email\" placeholder=\"Enter Email\" required>\n" +
+        "                                </div>\n" +
+        "                         \t\n" +
+        "                              \n" +
+        "                    </div>\n" +
+        "                  </div>\n" +
+        "\t\t\t\t  <p id=\"buttons\"style=\"margin:auto; text-align:center;\">\n" +
+        "                              <button type=\"submit\" name=\"submit\" class=\"btn btn-success\">Submit</button>\n" +
+        "                              <a href=\"#\"><button type=\"button\" class=\"btn btn-danger\">Reset</button></a>\n" +
+        "                              </p>\n" +
+        "                </div>\n" +
+        "              </div>\n" +
+        "            </form></div>\n" +
+        "            <!-- /.container-fluid -->\n" +
+        "\n" +
+        "    <!-- Bootstrap Core JavaScript -->\n" +
+        "    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n" +
+        "\n" +
+        "</body>\n" +
+        "\n" +
+        "</html>\n";
+    res.send(html);
+});
+
+router.post('registerSuccess',function (req, res) {
+    let name = req.body.name;
+    let username = req.body.username;
+    let access = req.body.access;
+    let password = req.body.password;
+    console.log(name + " " + username + " " + access + " " + password);
+});*/
+
 router.post('/register', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -77,13 +172,16 @@ router.post('/postNews', function (req, res) {
     newNews.description = req.body.description;
     newNews.url = req.body.url;
     newNews.category = req.body.category;
-    newNews.tagPrimary = req.body.tagPrimary;
-    newNews.tagSecondary = req.body.tagSecondary;
     newNews.imageURL = req.body.imageURL;
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
-
+    newNews.uniqueUrl = "";
+    newNews.titleSearch.forEach((str) => {
+        newNews.uniqueUrl += str + "?";
+    });
+    let date = newNews.date.split('.');
+    newNews.uniqueUrl += date[0];
     newNews.tags.forEach((cat) => {
         Cat.findOneAndUpdate({category: req.body.category}, {
             $inc: {
@@ -143,8 +241,8 @@ router.post('/postNews', function (req, res) {
 
 //Update news - all fields
 router.post('/updateNews', function (req, res) {
-
     News.findOneAndUpdate({_id: req.body._id}, {
+
         $set: {
             title: req.body.title,
             titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),
@@ -156,7 +254,8 @@ router.post('/updateNews', function (req, res) {
             tagSecondary: req.body.tagSecondary,
             imageURL: req.body.imageURL,
             source: req.body.source,
-            count: req.body.count
+            count: req.body.count,
+
         }
     }, {returnOriginal: false}, function (err, news) {
         if (err) {
@@ -463,6 +562,9 @@ router.post('/bookmark', function (req, res) {
     var bookmarkedNews = BookmarkedNews();
     bookmarkedNews.username = req.body.username;
     console.log("news id= " + req.body.news_id);
+    User.findOne({})
+
+
     News.findOne({_id:req.body.news_id},function (err, news) {
         if(err){
             console.log(err);
@@ -601,6 +703,9 @@ router.get('/getNews', function (req, res) {
         //console.log(data)
     });
 });
+
+//Get news by uniqueUrl
+
 
 //Get news by category
 router.get('/getNewsByCategory/:category', function (req, res) {

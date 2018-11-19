@@ -21,12 +21,6 @@ var newsSchema = new mongoose.Schema({
     category:{
         type:String
     },
-    tagPrimary:{
-        type:String
-    },
-    tagSecondary:{
-        type:String
-    },
     imageURL:{
         type:String
     },
@@ -43,6 +37,9 @@ var newsSchema = new mongoose.Schema({
     verify:{
         type:Boolean,
         default:false
+    },uniqueUrl:{
+        type:String,
+        required:true
     }
 });
 
