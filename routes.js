@@ -566,7 +566,7 @@ router.post('/bookmark', function (req, res) {
 
 
     News.findOne({_id:req.body.news_id},function (err, news) {
-        let data = {success:0,data:""};
+        let data = {success:"0",data:""};
         if(err){
             console.log(err);
             res.send(data);
@@ -578,14 +578,14 @@ router.post('/bookmark', function (req, res) {
                 if (err) {
                     try {
                         console.log(err);
-                        res.send("Already bookmarked");
+                        res.send(data);
                         return;
                     } catch (err) {
                         console.log(err);
                     }
                 }
-                data.success = 1;
-                data.data = bkNews;
+                data.success = "1";
+                data.data = req.body.news_id;
                 res.send(data);
             });
         }
