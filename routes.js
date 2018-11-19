@@ -566,8 +566,10 @@ router.post('/bookmark', function (req, res) {
 
 
     News.findOne({_id:req.body.news_id},function (err, news) {
+        let data = {success:0,data:""};
         if(err){
             console.log(err);
+            res.send(data);
         }else{
             console.log("Found news");
             bookmarkedNews.news = news;
@@ -581,7 +583,8 @@ router.post('/bookmark', function (req, res) {
                         console.log(err);
                     }
                 }
-                res.send("Bookmarked");
+                data.data = bookmarkedNews;
+                res.send(data);
             });
         }
     });
