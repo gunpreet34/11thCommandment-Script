@@ -4,8 +4,7 @@ var bookmarkedNewsSchema = new mongoose.Schema({
         type:String
     },
     news:{
-        type:Object,
-        unique:true
+        type:Object
     }
 });
 
