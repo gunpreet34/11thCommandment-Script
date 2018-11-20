@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var sortJson = require('sort-json-array');
+var fs = require('fs');
+
 
 var User = require('./models/user');
 var News = require('./models/news');
@@ -145,6 +147,21 @@ router.post('/login', function (req, res) {
             res.send("Found");
         }
     });
+});
+
+//Add a new Category
+router.post('/addCategory', function (req, res) {
+    let cat = Cat();
+    cat.category = req.body.category;
+    let image = req.body.image;
+    image = image.split(';base64,').pop();
+    fs.writeFile(cat.category + ".jpg",image,{encoding:'base64'},function (err) {
+        if(!err)
+            console.log('File created');
+        else
+            console.log('Error');
+    });
+
 });
 
 //Get Categories
