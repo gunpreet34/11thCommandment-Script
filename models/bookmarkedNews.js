@@ -4,7 +4,7 @@ var bookmarkedNewsSchema = new mongoose.Schema({
         type:String
     },
     news:{
-        type:String
+        type:Object
     }
 });
 

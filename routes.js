@@ -560,10 +560,7 @@ router.post('/updateNewsByCounter', function (req, res) {
 router.post('/bookmark', function (req, res) {
 
     var bookmarkedNews = BookmarkedNews;
-    /*bookmarkedNews.username = req.body.username;*/
     console.log("news id= " + req.body.news_id);
-    User.findOne({})
-
 
     News.findOne({_id:req.body.news_id},function (err, news) {
         let data = {success:"0",data:""};
@@ -572,8 +569,7 @@ router.post('/bookmark', function (req, res) {
             res.send(data);
         }else{
             console.log("Found news");
-            /*bookmarkedNews = news;*/
-            var dt={news:req.body.news_id,username:req.body.username};
+            var dt={news:news,username:req.body.username};
             bookmarkedNews.update(dt,dt,{upsert:true},function (err, bkNews) {
                 if (err) {
                     try {
@@ -585,7 +581,7 @@ router.post('/bookmark', function (req, res) {
                     }
                 }
                 data.success = "1";
-                data.data = req.body.news_id;
+                data.data = bkNews;
                 res.send(data);
             });
         }
