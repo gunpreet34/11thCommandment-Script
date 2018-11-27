@@ -9,6 +9,8 @@ let News = require('./models/news');
 let BookmarkedNews = require('./models/bookmarkedNews');
 let Cat = require('./models/category');
 let Poll = require('./models/poll');
+let SavedPoll = require('./models/savedPoll');
+
 
 
 //Register post request
@@ -289,13 +291,7 @@ router.post('/pollCount',function (req, res) {
     let option = req.body.optionSelected;
     let username = req.body.username;
     let poll_id = req.body._id;
-    Poll.deleteOne({_id:poll_id},function (err, success) {
-        if(err){
-            res.send(err);
-        }else {
-            res.send("Poll delete successful");
-        }
-    });
+    SavedPoll.
 });
 
 //Post-news
@@ -313,6 +309,7 @@ router.post('/postNews', function (req, res) {
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
     newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
     let date = newNews.date.split('.');
+    newNews.uniqueUrl += "https://commandment-api.herokuapp.com/news/";
     newNews.uniqueUrl += date[0];
     newNews.tags.forEach((cat) => {
         Cat.findOneAndUpdate({category: req.body.category}, {
