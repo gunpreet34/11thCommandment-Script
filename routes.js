@@ -291,7 +291,7 @@ router.post('/pollCount',function (req, res) {
     let option = req.body.optionSelected;
     let username = req.body.username;
     let poll_id = req.body._id;
-    
+
 });
 
 //Post-news
