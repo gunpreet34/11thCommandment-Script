@@ -99,6 +99,7 @@ let Poll = require('./models/poll');
     res.send(html);
 });*/
 
+//Users
 router.get('/registerAdmin', function(req, res){
     res.render('adminRegister.ejs');
 });
@@ -161,13 +162,20 @@ router.post('/login', function (req, res) {
 router.post('/addCategory', function (req, res) {
     let cat = Cat();
     cat.category = req.body.category;
-    let image = req.body.image;
+    /*let image = req.body.image;
     image = image.split(';base64,').pop();
     fs.writeFile(cat.category + ".jpg",image,{encoding:'base64'},function (err) {
         if(!err)
             console.log('File created');
         else
             console.log('Error');
+    });*/
+    cat.save({category:req.body.category},function (err, result) {
+        if(err){
+            res.send(err);
+        }else{
+            res.send("Category added");
+        }
     });
 
 });
@@ -380,7 +388,7 @@ router.post('/updateNews', function (req, res) {
             count: req.body.count,
 
         }
-    }, {returnOriginal: true}, function (err, news) {
+    }, {returnOriginal: false}, function (err, news) {
         if (err) {
             try {
                 res.send("Error updating. Title should be unique");
@@ -391,21 +399,22 @@ router.post('/updateNews', function (req, res) {
             if (!news) {
                 res.send("Not found");
             } else {
-                req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
-                    //Decrementing count acc to old categories
-                    news.tags.forEach((category)=>{
-                        Cat.findOneAndUpdate({category: category}, {$inc:{
-                            count: -1
-                        }},function (err, success) {
-                            if (err) {
-                                console.log("Error decrementing category")
-                            } else {
-                                res.send(data);
-                            }
-                        });
+                //Decrementing count acc to old categories
+                news.category.split(', ').forEach((category)=>{
+                    Cat.findOneAndUpdate({category: category}, {$inc:{
+                        count: -1
+                    }},function (err, success) {
+                        if (err) {
+                            console.log("Error decrementing category")
+                        } else {
+                            console.log("Decremented");
+                        }
                     });
-                    //Incrementing count acc to new categories
-                    Cat.findOneAndUpdate({category: req.body.category}, {
+                });
+
+                //Incrementing count acc to new categories
+                req.body.category.split(', ').forEach((cat) => {
+                    Cat.findOneAndUpdate({category: cat}, {
                         $inc: {
                             count:1
                         }
@@ -450,338 +459,6 @@ router.post('/updateNews', function (req, res) {
     });
 });
 
-//Update news title
-router.post('/updateNewsByTitle', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            title: req.body.title,
-            titleSearch: req.body.title.split(' ').map(k => k.toLowerCase())
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                res.send("Error updating. Title should be unique");
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news description
-router.post('/updateNewsByDescription', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            description: req.body.description
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news url
-router.post('/updateNewsByUrl', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            url: req.body.url
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        if (!news) {
-            res.send("Not found");
-        } else {
-            console.log("Successfully updated");
-        }
-    });
-});
-
-//Update news category
-router.post('/updateNewsByCategory', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            category: req.body.category,
-            tags:req.body.category.split(' ').map(k => k.toLowerCase())
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
-                    let newCat = Cat();
-                    if(cat.charAt(cat.length) == ','){
-                        cat = cat.substr(0,cat.length-2);
-                    }
-                    newCat.category = cat;
-                    newCat.save(function (err, savedCat) {
-                        if(err){
-                            try {
-                                console.log(err);
-                            }catch(err){
-                                console.log(err);
-                            }
-                            console.log(savedCat);
-                        }
-                    });
-                });
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news tagPrimary
-router.post('/updateNewsByTagPrimary', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            tagPrimary: req.body.tagPrimary
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news tagSecondary
-router.post('/updateNewsByTagSecondary', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            tagSecondary: req.body.tagSecondary
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news imageUrl
-router.post('/updateNewsByImageUrl', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            imageURL: req.body.imageURL
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Update news source
-router.post('/updateNewsBySource', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id}, {
-        $set: {
-            source: req.body.source
-        }
-    }, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                console.log("Error updating news");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-//Updating news time counter
-router.post('/updateNewsByCounter', function (req, res) {
-
-    News.findOneAndUpdate({_id: req.body._id},
-        {$set: {count: req.body.count}}, {returnOriginal: false}, function (err, news) {
-        if (err) {
-            try {
-                res.send("Error in connection");
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }else {
-            if (!news) {
-                res.send("Not found");
-            } else {
-                console.log("Successfully updated");
-            }
-        }
-    });
-});
-
-
-//Bookmarking
-router.post('/bookmark', function (req, res) {
-
-    let bookmarkedNews = BookmarkedNews;
-    console.log("news id= " + req.body.news_id);
-
-    News.findOne({_id:req.body.news_id},function (err, news) {
-        let data = {success:"0",data:""};
-        if(err){
-            console.log(err);
-            res.send(data);
-        }else{
-            console.log("Found news");
-            let searchCriteria={news:news,username:req.body.username};
-            let record={news:news,username:req.body.username,news_id:req.body.news_id};
-            bookmarkedNews.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
-                if (err) {
-                    res.send(data);
-                }else{
-                    data.success = "1";
-                    data.data = bkNews;
-                    res.send(data);
-                }
-            });
-        }
-    });
-
-});
-
-/*//Multiple bookmarks
-router.post('/bookmarkMultiple', function (req, res) {
-
-    let bookmarkedNews = BookmarkedNews();
-    bookmarkedNews.username = req.body.username;
-    let news_array = req.body.news_array;
-    for(let news_id in news_array){
-        console.log("news id= " + news_id);
-        News.findOne({_id:news_id},function (err, news) {
-            if(err){
-                console.log(err);
-            }else{
-                console.log("Found news");
-                bookmarkedNews.news = news;
-                bookmarkedNews.save(function (err, bookmarkedNews) {
-                    if (err) {
-                        try {
-                            console.log(err);
-                            res.send("Already bookmarked");
-                            return;
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                    res.send("Bookmarked");
-                });
-            }
-        });
-    }
-
-});*/
-
-//Get news bookmarked by user
-router.post('/getBookmarkedNews',function (req, res) {
-    BookmarkedNews.find({username:req.body.username},{username:0},function (err,bookmarkedNewsArray) {
-        let data = {success: "0", data: ''};
-        if (err) {
-            console.info(err);
-            res.send(data)
-        } else {
-            console.log(bookmarkedNewsArray);
-            data.success = "1";
-            data.data = bookmarkedNewsArray;
-            res.send(data);
-        }
-    });
-});
-
-//Delete bookmark
-router.post('/deleteBookmark', function (req, res) {
-
-    let data={success:"0",data:""};
-    News.deleteOne({username: req.body.username,news_id:req.body.news_id}, function (err, results) {
-        if (err) {
-            console.log("Error");
-            res.send(data);
-        }else{
-            console.log("Bookmark removed " + results);
-            data.success = "1";
-            data.data = "Bookmark Removed";
-            res.send(data);
-        }
-
-    })
-});
 
 //Delete a news
 router.post('/deleteNews', function (req, res) {    
@@ -947,6 +624,102 @@ router.post('/getNewsByTitle',function (req,res) {
            res.send(data);
        }
    });
+});
+
+
+//Bookmarking
+router.post('/bookmark', function (req, res) {
+
+    let bookmarkedNews = BookmarkedNews;
+    console.log("news id= " + req.body.news_id);
+
+    News.findOne({_id:req.body.news_id},function (err, news) {
+        let data = {success:"0",data:""};
+        if(err){
+            console.log(err);
+            res.send(data);
+        }else{
+            console.log("Found news");
+            let searchCriteria={news:news,username:req.body.username};
+            let record={news:news,username:req.body.username,news_id:req.body.news_id};
+            bookmarkedNews.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
+                if (err) {
+                    res.send(data);
+                }else{
+                    data.success = "1";
+                    data.data = bkNews;
+                    res.send(data);
+                }
+            });
+        }
+    });
+
+});
+
+/*//Multiple bookmarks
+router.post('/bookmarkMultiple', function (req, res) {
+
+    let bookmarkedNews = BookmarkedNews();
+    bookmarkedNews.username = req.body.username;
+    let news_array = req.body.news_array;
+    for(let news_id in news_array){
+        console.log("news id= " + news_id);
+        News.findOne({_id:news_id},function (err, news) {
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Found news");
+                bookmarkedNews.news = news;
+                bookmarkedNews.save(function (err, bookmarkedNews) {
+                    if (err) {
+                        try {
+                            console.log(err);
+                            res.send("Already bookmarked");
+                            return;
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                    res.send("Bookmarked");
+                });
+            }
+        });
+    }
+
+});*/
+
+//Get news bookmarked by user
+router.post('/getBookmarkedNews',function (req, res) {
+    BookmarkedNews.find({username:req.body.username},{username:0},function (err,bookmarkedNewsArray) {
+        let data = {success: "0", data: ''};
+        if (err) {
+            console.info(err);
+            res.send(data)
+        } else {
+            console.log(bookmarkedNewsArray);
+            data.success = "1";
+            data.data = bookmarkedNewsArray;
+            res.send(data);
+        }
+    });
+});
+
+//Delete bookmark
+router.post('/deleteBookmark', function (req, res) {
+
+    let data={success:"0",data:""};
+    BookmarkedNews.deleteOne({username: req.body.username,news_id:req.body.news_id}, function (err, results) {
+        if (err) {
+            console.log("Error");
+            res.send(data);
+        }else{
+            console.log("Bookmark removed " + results);
+            data.success = "1";
+            data.data = "Bookmark Removed";
+            res.send(data);
+        }
+
+    })
 });
 
 module.exports = router;
