@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var newsSchema = new mongoose.Schema({
+let mongoose = require('mongoose');
+let newsSchema = new mongoose.Schema({
     title:{
         type:String
     },
@@ -43,5 +43,5 @@ var newsSchema = new mongoose.Schema({
     }
 });
 
-var News = mongoose.model('News',newsSchema);
+let News = mongoose.model('News',newsSchema);
 module.exports = News;

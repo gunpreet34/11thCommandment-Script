@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var pollSchema = new mongoose.Schema({
+let mongoose = require('mongoose');
+let pollSchema = new mongoose.Schema({
     title:{
         type:String
     },
@@ -33,5 +33,5 @@ var pollSchema = new mongoose.Schema({
     }
 });
 
-var Poll = mongoose.model('Poll',pollSchema);
+let Poll = mongoose.model('Poll',pollSchema);
 module.exports = Poll;

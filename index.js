@@ -1,6 +1,6 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
+let express = require('express');
+let mongoose = require('mongoose');
+let bodyParser = require('body-parser');
 
 //Connect to MongoDB MLAb
 try{
@@ -10,7 +10,7 @@ try{
 }
 
 //express object
-var app = express();
+let app = express();
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());

@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var catSchema = new mongoose.Schema({
+let mongoose = require('mongoose');
+let catSchema = new mongoose.Schema({
     category:{
         type:String,
         unique:true
@@ -11,5 +11,5 @@ var catSchema = new mongoose.Schema({
     }
 });
 
-var Cat = mongoose.model('Cat',catSchema);
+let Cat = mongoose.model('Cat',catSchema);
 module.exports = Cat;
