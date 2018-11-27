@@ -3,7 +3,11 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 
 //Connect to MongoDB MLAb
-mongoose.connect('mongodb://gunpreet.34:grass80_@ds131313.mlab.com:31313/commandment-db', { useNewUrlParser: true });
+try{
+    mongoose.connect('mongodb://gunpreet.34:grass80_@ds131313.mlab.com:31313/commandment-db', { useNewUrlParser: true });
+}catch(err){
+    console.log(err);
+}
 
 //express object
 var app = express();

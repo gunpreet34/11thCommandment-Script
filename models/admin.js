@@ -2,9 +2,6 @@ let mongoose = require('mongoose');
 let adminSchema = new mongoose.Schema({
     name:{
         type:String
-    },username:{
-        type:String,
-        unique:true
     },password:{
         type:String
     },access:{

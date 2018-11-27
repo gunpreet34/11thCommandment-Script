@@ -189,15 +189,15 @@ router.get('/getCategories', function (req, res) {
 
 //Add a new Poll
 router.post('/addPoll', function (req, res) {
-    let poll = Poll();
-/*    poll.title = req.body.title;
+    let poll = Poll;
+    /*poll.title = req.body.title;
     poll.description = req.body.description;
     poll.url = req.body.url;
     poll.imageURL = req.body.imageURL;
     poll.question = req.body.question;
     poll.date = new Date().getTime() / 1000;
-
-    poll.save(function (err, savedPoll) {
+    let upsertData = poll.toObject();*/
+    /*poll.save(function (err, savedPoll) {
         if (err) {
             try {
                 res.send("Already added poll");
@@ -213,12 +213,12 @@ router.post('/addPoll', function (req, res) {
     let data = {success:"0",data:""};
     let searchCriteria={title:req.body.title,description:req.body.description};
     let record={title:req.body.title,description:req.body.description,url:req.body.url,imageURL:req.body.imageURL,question:req.body.question,date:new Date().getTime()/1000};
-    poll.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
+    poll.update(searchCriteria,record,{upsert:true},function (err, pollDetails) {
         if (err) {
             res.send(data);
         }else{
             data.success = "1";
-            data.data = bkNews;
+            data.data = pollDetails;
             res.send(data);
         }
     });

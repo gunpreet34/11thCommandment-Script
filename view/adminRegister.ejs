@@ -9,6 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+
     <!-- Bootstrap Core CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -21,7 +22,7 @@
 </head>
 
 <body>
-    <form action='../registerSuccess' method="post" enctype="multipart/form-data">
+    <form action='/registerSuccess' method="post" enctype="multipart/form-data">
         <div class="container" style="margin:auto; padding:50px;">
             <p>Enter The Details</p>
             <div class="row">
@@ -43,6 +44,11 @@
                 <div class="col-lg-6">
 
                     <div class="form-group">
+                        <label>Enter Phone Number</label>
+                        <input class="form-control" type="text" name="number" placeholder="Enter Phone Number">
+                    </div>
+
+                    <div class="form-group">
                         <label>Enter Email</label>
                         <input class="form-control" type="text" name="email" placeholder="Enter Email Address">
                     </div>
@@ -57,11 +63,15 @@
             </div>
             <p id="buttons"style="margin:auto; text-align:center;">
                 <button type="submit" name="submit" class="btn btn-success">Submit</button>
-                <a href="addtrainee.php"><button type="button" class="btn btn-danger">Reset</button></a>
             </p>
         </div>
     </form>
 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+        $('#repw').on('input', function() {
+
+        });
+    </script>
 
     <!-- /.container-fluid -->
     <!-- Bootstrap Core JavaScript -->
