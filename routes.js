@@ -272,10 +272,7 @@ router.post('/postNews', function (req, res) {
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
-    newNews.uniqueUrl = "";
-    newNews.titleSearch.forEach((str) => {
-        newNews.uniqueUrl += str + "?";
-    });
+    newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
     let date = newNews.date.split('.');
     newNews.uniqueUrl += date[0];
     newNews.tags.forEach((cat) => {
@@ -754,7 +751,8 @@ router.post('/deleteNews', function (req, res) {
         if (err) {
             console.log(err);
         }else{
-            category = news.category;
+            console.log(news);
+            //category = news.category;
         }
     });
     let data = {success:"0",data:""};
@@ -841,8 +839,10 @@ router.get('/news/:url', function (req, res) {
         let data = {success: "0", data: ''};
         if (err) {
             console.info(err);
-            res.send(data)
+            res.send(data);
         } else {
+            console.log(req.params.url);
+            console.log(news);
             data.success = "1";
             data.data = news;
             res.send(data);
