@@ -102,3 +102,7 @@ For removing bookmarks
 /deleteBookmark - post request
 send - username,news_id
 response - json - {success,data} - success in string("0" or "1") and data is String containing the message
+
+For sharing news url
+Share -> "https://commandment-api.herokuapp.com/news/" + uniqueUrl
+get request to above url will return the news

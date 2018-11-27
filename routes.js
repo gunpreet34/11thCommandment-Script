@@ -104,12 +104,13 @@ router.get('/registerAdmin', function(req, res){
 });
 
 
-router.post('registerSuccess',function (req, res) {
+router.post('/registerSuccess',function (req, res) {
     let name = req.body.name;
-    let username = req.body.username;
+    let email = req.body.email;
     let access = req.body.access;
     let password = req.body.password;
-    console.log(name + " " + username + " " + access + " " + password);
+    let number = req.body.number;
+    console.log(name + " " + email+ " " + access + " " + password + " " + number);
 });
 
 router.post('/register', function (req, res) {
@@ -173,17 +174,18 @@ router.post('/addCategory', function (req, res) {
 
 //Get Categories
 router.get('/getCategories', function (req, res) {
-    Cat.find({}, function (err, cats) {
+    Cat.find({count:{ $gt: 0}}, function (err, cats) {
         let data = {success: "0", data: ''};
         if (err) {
             console.log(err);
             res.send(data);
+        }else{
+            console.log(cats);
+            data.success = "1";
+            data.data = cats;
+            res.send(data);
+
         }
-        //console.log(news);
-        data.success = "1";
-        data.data = cats;
-        res.send(data);
-        //console.log(data)
     });
 });
 
@@ -225,7 +227,7 @@ router.post('/addPoll', function (req, res) {
 
 });
 
-//Get all girls
+//Get all polls
 router.get('/getPolls',function (req, res) {
     Poll.find({}, function (err, poll) {
         let data = {success: "0", data: ''};
@@ -258,6 +260,19 @@ router.post('/deletePoll', function (req, res) {
     })
 });
 
+//Increase poll counter
+router.post('/pollCount',function (req, res) {
+    let option = req.body.optionSelected;
+    let username = req.body.username;
+    let poll_id = req.body._id;
+    Poll.deleteOne({_id:poll_id},function (err, success) {
+        if(err){
+            res.send(err);
+        }else {
+            res.send("Poll delete successful");
+        }
+    });
+});
 
 //Post-news
 router.post('/postNews', function (req, res) {
@@ -284,7 +299,6 @@ router.post('/postNews', function (req, res) {
             if (err) {
                 try {
                     console.send("Error incrementing category count");
-                    return;
                 } catch (err) {
                     console.log(err);
                 }
@@ -350,7 +364,7 @@ router.post('/updateNews', function (req, res) {
             count: req.body.count,
 
         }
-    }, {returnOriginal: false}, function (err, news) {
+    }, {returnOriginal: true}, function (err, news) {
         if (err) {
             try {
                 res.send("Error updating. Title should be unique");
@@ -362,6 +376,19 @@ router.post('/updateNews', function (req, res) {
                 res.send("Not found");
             } else {
                 req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
+                    //Decrementing count acc to old categories
+                    news.tags.forEach((category)=>{
+                        Cat.findOneAndUpdate({category: category}, {$inc:{
+                            count: -1
+                        }},function (err, success) {
+                            if (err) {
+                                console.log("Error decrementing category count")
+                            } else {
+                                res.send(data);
+                            }
+                        });
+                    });
+                    //Incrementing count acc to new categories
                     Cat.findOneAndUpdate({category: req.body.category}, {
                         $inc: {
                             count:1
@@ -370,7 +397,6 @@ router.post('/updateNews', function (req, res) {
                         if (err) {
                             try {
                                 console.send("Error incrementing category count");
-                                return;
                             } catch (err) {
                                 console.log(err);
                             }
@@ -420,7 +446,6 @@ router.post('/updateNewsByTitle', function (req, res) {
         if (err) {
             try {
                 res.send("Error updating. Title should be unique");
-                return;
             } catch (err) {
                 console.log(err);
             }
@@ -445,7 +470,6 @@ router.post('/updateNewsByDescription', function (req, res) {
         if (err) {
             try {
                 console.log("Error updating news");
-                return;
             } catch (err) {
                 console.log(err);
             }
@@ -495,7 +519,6 @@ router.post('/updateNewsByCategory', function (req, res) {
         if (err) {
             try {
                 console.log("Error updating news");
-                return;
             } catch (err) {
                 console.log(err);
             }
@@ -746,37 +769,44 @@ router.post('/deleteBookmark', function (req, res) {
 
 //Delete a news
 router.post('/deleteNews', function (req, res) {    
-    let category = "";
+    let tags = "";
     News.findOne({_id: req.body._id},function (err, news) {
         if (err) {
             console.log(err);
         }else{
-            console.log(news);
-            //category = news.category;
-        }
-    });
-    let data = {success:"0",data:""};
-    News.deleteOne({_id: req.body._id}, function (err, results) {
-        if (err) {
-            console.log("Error");
-            res.send(data);
-        }else{
-            if(category != ""){
-                Cat.deleteOne({category:category},function (err, success) {
-                    if(err){
-                        console.log("Error deleting category")
-                    }else{
-                        data.success = "1";
-                        data.data = "Deleted news and category";
+            let data = {success:"0",data:""};
+            //console.log("News = " + news);
+            tags = news.tags;
+            console.log("News tag: " + news.tags);
+            News.deleteOne({_id: req.body._id}, function (err, results) {
+                if (err) {
+                    console.log("Error");
+                    res.send(data);
+                } else {
+                    if (tags != "") {
+                        tags.forEach((category)=>{
+                            Cat.findOneAndUpdate({category: category}, {$inc:{
+                                count: -1
+                            }},function (err, success) {
+                                if (err) {
+                                    console.log("Error deleting category")
+                                } else {
+                                    data.success = "1";
+                                    data.data = "Deleted news and category";
+                                    res.send(data);
+                                }
+                            });
+                        });
+                    } else {
+                        console.log("Error deleting news");
                         res.send(data);
                     }
-                });
-            }else{
-                console.log("Error deleting news");
-                res.send(data);
-            }
 
+                }
+            });
         }
+    });
+
         /*if (results.n > 0) {
             News.findOne({_id:req.body._id},{title:0,description:0,url:0,category:0,source:0,imageURL:0,tagPrimary:0,tagSecondary:0,titleSearch:0,date:0,count:0},function (err,news) {
                 if(err){
@@ -790,7 +820,6 @@ router.post('/deleteNews', function (req, res) {
             res.send("No such record found");
         }*/
 
-    })
 });
 
 //Get all news
