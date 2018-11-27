@@ -8,6 +8,7 @@ var User = require('./models/user');
 var News = require('./models/news');
 var BookmarkedNews = require('./models/bookmarkedNews');
 var Cat = require('./models/category');
+var Poll = require('./models/poll');
 
 //Register post request
 /*router.get('/registerAdmin',function (req, res) {
@@ -179,6 +180,46 @@ router.get('/getCategories', function (req, res) {
         //console.log(data)
     });
 });
+
+//Add a new Poll
+router.post('/addPoll', function (req, res) {
+    let poll = Poll();
+/*    poll.title = req.body.title;
+    poll.description = req.body.description;
+    poll.url = req.body.url;
+    poll.imageURL = req.body.imageURL;
+    poll.question = req.body.question;
+    poll.date = new Date().getTime() / 1000;
+
+    poll.save(function (err, savedPoll) {
+        if (err) {
+            try {
+                res.send("Already added poll");
+                console.log(err);
+                return;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        console.log(savedPoll);
+        res.send("Save success");
+    });*/
+    let data = {success:"0",data:""};
+    let searchCriteria={title:req.body.title,description:req.body.description};
+    let record={title:req.body.title,description:req.body.description,url:req.body.url,imageURL:req.body.imageURL,question:req.body.question,date:new Date().getTime()/1000};
+    poll.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
+        if (err) {
+            res.send(data);
+        }else{
+            data.success = "1";
+            data.data = bkNews;
+            res.send(data);
+        }
+    });
+
+});
+
+
 
 //Post-news
 router.post('/postNews', function (req, res) {
@@ -586,27 +627,23 @@ router.post('/bookmark', function (req, res) {
             res.send(data);
         }else{
             console.log("Found news");
-            var dt={news:news,username:req.body.username};
-            bookmarkedNews.update(dt,dt,{upsert:true},function (err, bkNews) {
+            var searchCriteria={news:news,username:req.body.username};
+            var record={news:news,username:req.body.username,news_id:req.body.news_id};
+            bookmarkedNews.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
                 if (err) {
-                    try {
-                        console.log(err);
-                        res.send(data);
-                        return;
-                    } catch (err) {
-                        console.log(err);
-                    }
+                    res.send(data);
+                }else{
+                    data.success = "1";
+                    data.data = bkNews;
+                    res.send(data);
                 }
-                data.success = "1";
-                data.data = bkNews;
-                res.send(data);
             });
         }
     });
 
 });
 
-//Multiple bookmarks
+/*//Multiple bookmarks
 router.post('/bookmarkMultiple', function (req, res) {
 
     var bookmarkedNews = BookmarkedNews();
@@ -636,7 +673,7 @@ router.post('/bookmarkMultiple', function (req, res) {
         });
     }
 
-});
+});*/
 
 //Get news bookmarked by user
 router.post('/getBookmarkedNews',function (req, res) {
@@ -657,20 +694,15 @@ router.post('/getBookmarkedNews',function (req, res) {
 //Delete bookmark
 router.post('/deleteBookmark', function (req, res) {
 
-    News.deleteOne({_id: req.body._id}, function (err, results) {
+    let data={success:"0",data:""};
+    News.deleteOne({username: req.body.username,news_id:req.body.news_id}, function (err, results) {
         if (err) {
-            try {
-                console.log("Error");
-                res.send(err);
-                return;
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        if (results.n > 0) {
-            res.send("Successfully deleted");
-        } else {
-            console.log("Already un bookmarked");
+            console.log("Error");
+            res.send(data);
+        }else{
+            data.success = "1";
+            data.data = "Bookmark Removed";
+            res.send(data);
         }
 
     })
@@ -678,16 +710,23 @@ router.post('/deleteBookmark', function (req, res) {
 
 //Delete a news
 router.post('/deleteNews', function (req, res) {    
-
+    let category = "";
+    News.findOne({_id: req.body._id},function (err, news) {
+        if (err) {
+            console.log(err);
+        }else{
+            category = news.category;
+        }
+    });
+    data = {success:"0",data:""};
     News.deleteOne({_id: req.body._id}, function (err, results) {
         if (err) {
-            try {
-                console.log("Error");
-                res.send(err);
-                return;
-            } catch (err) {
-                console.log(err);
-            }
+            console.log("Error");
+            res.send(data);
+        }else{
+            data.success = "1";
+            data.data = "Deleted news";
+            data.
         }
         /*if (results.n > 0) {
             News.findOne({_id:req.body._id},{title:0,description:0,url:0,category:0,source:0,imageURL:0,tagPrimary:0,tagSecondary:0,titleSearch:0,date:0,count:0},function (err,news) {
@@ -742,6 +781,25 @@ router.get('/getNewsByCategory/:category', function (req, res) {
     console.info(req.body.category);
 
     News.find({tags: req.params.category.toLowerCase()},{category:0}, callback);
+
+});
+
+//Get news by url
+router.get('/news/:url', function (req, res) {
+    let callback = (err, news) => {
+        var data = {success: "0", data: ''};
+        if (err) {
+            console.info(err);
+            res.send(data)
+        } else {
+            data.success = "1";
+            data.data = news;
+            res.send(data);
+        }
+    };
+    console.info(req.body.category);
+
+    News.find({uniqueUrl: req.params.url}, callback);
 
 });
 
