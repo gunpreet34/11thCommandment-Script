@@ -174,6 +174,22 @@ router.post('/addCategory', function (req, res) {
 
 //Get Categories
 router.get('/getCategories', function (req, res) {
+    Cat.find({}, function (err, cats) {
+        let data = {success: "0", data: ''};
+        if (err) {
+            console.log(err);
+            res.send(data);
+        }
+        //console.log(news);
+        data.success = "1";
+        data.data = cats;
+        res.send(data);
+        //console.log(data)
+    });
+});
+
+//Get categories with news
+router.get('/getCategoriesWithNews', function (req, res) {
     Cat.find({count:{ $gt: 0}}, function (err, cats) {
         let data = {success: "0", data: ''};
         if (err) {
@@ -382,7 +398,7 @@ router.post('/updateNews', function (req, res) {
                             count: -1
                         }},function (err, success) {
                             if (err) {
-                                console.log("Error decrementing category count")
+                                console.log("Error decrementing category")
                             } else {
                                 res.send(data);
                             }

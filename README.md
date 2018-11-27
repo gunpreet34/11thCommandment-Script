@@ -106,3 +106,8 @@ response - json - {success,data} - success in string("0" or "1") and data is Str
 For sharing news url
 Share -> "https://commandment-api.herokuapp.com/news/" + uniqueUrl
 get request to above url will return the news
+
+Get categories - Onlu those categories which have news in it
+GET request
+Nothing to send
+Response - json - {success,data} - success in string("0" or "1") and data is json containing categories
