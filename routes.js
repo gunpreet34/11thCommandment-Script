@@ -718,15 +718,27 @@ router.post('/deleteNews', function (req, res) {
             category = news.category;
         }
     });
-    data = {success:"0",data:""};
+    let data = {success:"0",data:""};
     News.deleteOne({_id: req.body._id}, function (err, results) {
         if (err) {
             console.log("Error");
             res.send(data);
         }else{
-            data.success = "1";
-            data.data = "Deleted news";
-            data.
+            if(category != ""){
+                Cat.deleteOne({category:category},function (err, success) {
+                    if(err){
+                        console.log("Error deleting category")
+                    }else{
+                        data.success = "1";
+                        data.data = "Deleted news and category";
+                        res.send(data);
+                    }
+                });
+            }else{
+                console.log("Error deleting news");
+                res.send(data);
+            }
+
         }
         /*if (results.n > 0) {
             News.findOne({_id:req.body._id},{title:0,description:0,url:0,category:0,source:0,imageURL:0,tagPrimary:0,tagSecondary:0,titleSearch:0,date:0,count:0},function (err,news) {
