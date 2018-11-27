@@ -14,13 +14,19 @@ var pollSchema = new mongoose.Schema({
     question:{
         type:String
     },
-    agreeCount:{
+    optionOneCount:{
         type:Number,
         default:0
     },
-    disagreeCount:{
+    optionTwoCount:{
         type:Number,
         default:0
+    },
+    optionOne:{
+        type:String
+    },
+    optionTwo:{
+        type:String
     },
     date:{
         type:String

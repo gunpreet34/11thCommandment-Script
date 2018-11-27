@@ -212,7 +212,7 @@ router.post('/addPoll', function (req, res) {
     });*/
     let data = {success:"0",data:""};
     let searchCriteria={title:req.body.title,description:req.body.description};
-    let record={title:req.body.title,description:req.body.description,url:req.body.url,imageURL:req.body.imageURL,question:req.body.question,date:new Date().getTime()/1000};
+    let record={title:req.body.title,description:req.body.description,url:req.body.url,imageURL:req.body.imageURL,question:req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo,date:new Date().getTime()/1000};
     poll.update(searchCriteria,record,{upsert:true},function (err, pollDetails) {
         if (err) {
             res.send(data);
@@ -239,6 +239,23 @@ router.get('/getPolls',function (req, res) {
             res.send(data);
         }
     });
+});
+
+//Delete polls
+router.post('/deletePoll', function (req, res) {
+
+    let data={success:"0",data:""};
+    Poll.deleteOne({_id: req.body._id}, function (err, result) {
+        if (err) {
+            console.log("Error");
+            res.send(data);
+        }else{
+            data.success = "1";
+            data.data = "Poll deleted successfully";
+            res.send(data);
+        }
+
+    })
 });
 
 
