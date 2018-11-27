@@ -307,8 +307,8 @@ router.post('/postNews', function (req, res) {
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
-    newNews.uniqueUrl = "https://commandment-api.herokuapp.com/news/";
-    newNews.uniqueUrl += newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
+    //newNews.uniqueUrl = "https://commandment-api.herokuapp.com/news/";
+    newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
     let date = newNews.date.split('.');
     newNews.uniqueUrl += date[0];
     newNews.tags.forEach((cat) => {
