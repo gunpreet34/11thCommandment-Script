@@ -93,3 +93,12 @@ response - json - {success,data} - where success is integer and data is in json 
 For getting categories
 /getCategories
 response - json - {success,data} - where success is integer and data is json
+
+For getting polls
+/getPolls - Post request
+response - json - {success,data} - success in string("0" or "1") and data is JsonArray of all the Polls
+
+For removing bookmarks
+/deleteBookmark - post request
+send - username,news_id
+response - json - {success,data} - success in string("0" or "1") and data is String containing the message

@@ -1,14 +1,15 @@
-var express = require('express');
-var router = express.Router();
-var sortJson = require('sort-json-array');
-var fs = require('fs');
+let express = require('express');
+let router = express.Router();
+let sortJson = require('sort-json-array');
+let fs = require('fs');
 
 
-var User = require('./models/user');
-var News = require('./models/news');
-var BookmarkedNews = require('./models/bookmarkedNews');
-var Cat = require('./models/category');
-var Poll = require('./models/poll');
+let User = require('./models/user');
+let News = require('./models/news');
+let BookmarkedNews = require('./models/bookmarkedNews');
+let Cat = require('./models/category');
+let Poll = require('./models/poll');
+
 
 //Register post request
 /*router.get('/registerAdmin',function (req, res) {
@@ -96,7 +97,12 @@ var Poll = require('./models/poll');
         "\n" +
         "</html>\n";
     res.send(html);
+});*/
+
+router.get('/registerAdmin', function(req, res){
+    res.render('adminRegister.ejs');
 });
+
 
 router.post('registerSuccess',function (req, res) {
     let name = req.body.name;
@@ -104,13 +110,13 @@ router.post('registerSuccess',function (req, res) {
     let access = req.body.access;
     let password = req.body.password;
     console.log(name + " " + username + " " + access + " " + password);
-});*/
+});
 
 router.post('/register', function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var token = req.body.token;
-    var newUser = User();
+    let username = req.body.username;
+    let password = req.body.password;
+    let token = req.body.token;
+    let newUser = User();
     newUser.username = username;
     newUser.password = password;
     newUser.token = token;
@@ -129,8 +135,8 @@ router.post('/register', function (req, res) {
 });
 //Login post request
 router.post('/login', function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+    let username = req.body.username;
+    let password = req.body.password;
 
     //Find user with given credentials in the database
     User.findOne({username: username, password: password}, function (err, user) {
@@ -219,12 +225,27 @@ router.post('/addPoll', function (req, res) {
 
 });
 
+//Get all girls
+router.get('/getPolls',function (req, res) {
+    Poll.find({}, function (err, poll) {
+        let data = {success: "0", data: ''};
+        if (err) {
+            console.log(err);
+            res.send(data);
+        }else{
+            data.success = "1";
+            poll = sortJson(poll,'date','des');
+            data.data = poll;
+            res.send(data);
+        }
+    });
+});
 
 
 //Post-news
 router.post('/postNews', function (req, res) {
 
-    var newNews = News();
+    let newNews = News();
     newNews.title = req.body.title;
     newNews.titleSearch = req.body.title.split(' ').map(k => k.toLowerCase());
     newNews.description = req.body.description;
@@ -469,7 +490,7 @@ router.post('/updateNewsByCategory', function (req, res) {
                 res.send("Not found");
             } else {
                 req.body.category.split(', ').map(k => k.toLowerCase()).forEach((cat) => {
-                    var newCat = Cat();
+                    let newCat = Cat();
                     if(cat.charAt(cat.length) == ','){
                         cat = cat.substr(0,cat.length-2);
                     }
@@ -617,7 +638,7 @@ router.post('/updateNewsByCounter', function (req, res) {
 //Bookmarking
 router.post('/bookmark', function (req, res) {
 
-    var bookmarkedNews = BookmarkedNews;
+    let bookmarkedNews = BookmarkedNews;
     console.log("news id= " + req.body.news_id);
 
     News.findOne({_id:req.body.news_id},function (err, news) {
@@ -627,8 +648,8 @@ router.post('/bookmark', function (req, res) {
             res.send(data);
         }else{
             console.log("Found news");
-            var searchCriteria={news:news,username:req.body.username};
-            var record={news:news,username:req.body.username,news_id:req.body.news_id};
+            let searchCriteria={news:news,username:req.body.username};
+            let record={news:news,username:req.body.username,news_id:req.body.news_id};
             bookmarkedNews.update(searchCriteria,record,{upsert:true},function (err, bkNews) {
                 if (err) {
                     res.send(data);
@@ -646,7 +667,7 @@ router.post('/bookmark', function (req, res) {
 /*//Multiple bookmarks
 router.post('/bookmarkMultiple', function (req, res) {
 
-    var bookmarkedNews = BookmarkedNews();
+    let bookmarkedNews = BookmarkedNews();
     bookmarkedNews.username = req.body.username;
     let news_array = req.body.news_array;
     for(let news_id in news_array){
@@ -678,7 +699,7 @@ router.post('/bookmarkMultiple', function (req, res) {
 //Get news bookmarked by user
 router.post('/getBookmarkedNews',function (req, res) {
     BookmarkedNews.find({username:req.body.username},{username:0},function (err,bookmarkedNewsArray) {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.info(err);
             res.send(data)
@@ -700,6 +721,7 @@ router.post('/deleteBookmark', function (req, res) {
             console.log("Error");
             res.send(data);
         }else{
+            console.log("Bookmark removed " + results);
             data.success = "1";
             data.data = "Bookmark Removed";
             res.send(data);
@@ -759,7 +781,7 @@ router.post('/deleteNews', function (req, res) {
 //Get all news
 router.get('/getNews', function (req, res) {
     News.find({}, function (err, news) {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.log(err);
             res.send(data);
@@ -779,7 +801,7 @@ router.get('/getNews', function (req, res) {
 //Get news by category
 router.get('/getNewsByCategory/:category', function (req, res) {
     let callback = (err, newsArray) => {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.info(err);
             res.send(data)
@@ -799,7 +821,7 @@ router.get('/getNewsByCategory/:category', function (req, res) {
 //Get news by url
 router.get('/news/:url', function (req, res) {
     let callback = (err, news) => {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.info(err);
             res.send(data)
@@ -818,7 +840,7 @@ router.get('/news/:url', function (req, res) {
 //Search news using title
 router.post('/searchNewsByTitle', function (req, res) {
     let callback = (err, newsArray) => {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if (err) {
             console.info(err);
             res.send(data)
@@ -838,7 +860,7 @@ router.post('/searchNewsByTitle', function (req, res) {
 //Get news by id
 router.post('/getNewsById/:id',function (req,res) {
     News.findOne({_id:req.params.id},{titleSearch:0,count:0},function (err,news) {
-        var data = {success: "0", data: ''};
+        let data = {success: "0", data: ''};
         if(err){
             res.send(data);
         }else{
@@ -853,7 +875,7 @@ router.post('/getNewsById/:id',function (req,res) {
 //Get news by title
 router.post('/getNewsByTitle',function (req,res) {
    News.findOne({title:req.body.title},{titleSearch:0,date:0,count:0},function (err,news) {
-       var data = {success: "0", data: ''};
+       let data = {success: "0", data: ''};
        if(err){
            res.send(data);
        }else{
