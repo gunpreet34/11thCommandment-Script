@@ -184,9 +184,8 @@ router.post('/addPoll', function (req, res) {
             poll.save(function (err, savedPoll) {
                 if (err) {
                     try {
-                        res.send("Already added poll");
                         console.log(err);
-                        return;
+                        res.send("Already added poll");
                     } catch (err) {
                         res.send(err);
                     }
@@ -222,9 +221,8 @@ router.post('/updatePoll', function (req, res) {
             },{returnOriginal: false},function (err, savedPoll) {
                 if (err) {
                     try {
-                        res.send("Poll not found");
                         console.log(err);
-                        return;
+                        res.send("Poll not found");
                     } catch (err) {
                         res.send(err);
                     }
