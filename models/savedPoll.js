@@ -4,6 +4,8 @@ let savedPollSchema = new mongoose.Schema({
         type:String
     },poll_id:{
         type:String
+    },option:{
+        type:Number
     }
 });
 

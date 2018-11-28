@@ -107,7 +107,8 @@ For sharing news url
 Share -> "https://commandment-api.herokuapp.com/news/" + uniqueUrl
 get request to above url will return the news
 
-Get categories - Onlu those categories which have news in it
-GET request
+Get categories - Only those categories which have news in it
+/getCategoriesWithNews/:category -GET request
 Nothing to send
 Response - json - {success,data} - success in string("0" or "1") and data is json containing categories
+

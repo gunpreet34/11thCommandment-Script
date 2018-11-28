@@ -340,6 +340,7 @@ router.post('/pollCount',function (req, res) {
                         let savedPoll = SavedPoll();
                         savedPoll.username = username;
                         savedPoll.poll_id = pollId;
+                        savedPoll.option = option;
                         savedPoll.save(function (err, savedPollDetails) {
                             if(err){
                                 console.log("Error saving poll for user");
@@ -391,6 +392,20 @@ router.post('/pollCount',function (req, res) {
         }
     });
 
+});
+
+//Get polled news by user
+router.get("/getPoll/:username",function (req, res) {
+    let data = {success:"0",data:""};
+    SavedPoll.find({username:req.params.username},function (err,savedPolls) {
+        if(err){
+            console.log(err);
+            res.send(data);
+        }else{
+            data = savedPolls;
+            res.send(data);
+        }
+    });
 });
 
 //Post-news
@@ -515,7 +530,7 @@ router.post('/updateNews', function (req, res) {
                     }, {returnOriginal: false}, function (err, category) {
                         if (err) {
                             try {
-                                console.send("Error incrementing category count");
+                                console.send("Error incrementing category count" );
                             } catch (err) {
                                 console.log(err);
                             }
