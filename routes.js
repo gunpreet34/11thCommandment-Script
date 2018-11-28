@@ -217,28 +217,30 @@ router.get('/getCategoriesWithNews', function (req, res) {
 
 //Add a new Poll
 router.post('/addPoll', function (req, res) {
-    let poll = Poll;
-    /*poll.title = req.body.title;
+    let poll = Poll();
+    poll.title = req.body.title;
     poll.description = req.body.description;
     poll.url = req.body.url;
     poll.imageURL = req.body.imageURL;
     poll.question = req.body.question;
+    poll.optionOneCount = 0;
+    poll.optionTwoCount = 0;
     poll.date = new Date().getTime() / 1000;
-    let upsertData = poll.toObject();*/
-    /*poll.save(function (err, savedPoll) {
+    poll.save(function (err, savedPoll) {
         if (err) {
             try {
                 res.send("Already added poll");
                 console.log(err);
                 return;
             } catch (err) {
-                console.log(err);
+                res.send(err);
             }
+        }else{
+            console.log(savedPoll);
+            res.send("Save success");
         }
-        console.log(savedPoll);
-        res.send("Save success");
-    });*/
-    let data = {success:"0",data:""};
+    });
+    /*let data = {success:"0",data:""};
     let searchCriteria={title:req.body.title,description:req.body.description};
     let record={title:req.body.title,description:req.body.description,url:req.body.url,imageURL:req.body.imageURL,question:req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo,date:new Date().getTime()/1000};
     poll.update(searchCriteria,record,{upsert:true},function (err, pollDetails) {
@@ -248,6 +250,36 @@ router.post('/addPoll', function (req, res) {
             data.success = "1";
             data.data = pollDetails;
             res.send(data);
+        }
+    });*/
+
+
+});
+
+//Update Poll
+router.post('/updatePoll', function (req, res) {
+    Poll.findOneAndUpdate({_id:req.body._id},{
+        $set: {
+            title: req.body.title,
+            description: req.body.description,
+            url: req.body.url,
+            imageURL: req.body.imageURL,
+            question: req.body.question,
+            optionOne:req.body.optionOne,
+            optionTwo:req.body.optionTwo
+        }
+    },{returnOriginal: false},function (err, savedPoll) {
+        if (err) {
+            try {
+                res.send("Poll not found");
+                console.log(err);
+                return;
+            } catch (err) {
+                res.send(err);
+            }
+        }else{
+            console.log(savedPoll);
+            res.send("Update success");
         }
     });
 
@@ -288,9 +320,76 @@ router.post('/deletePoll', function (req, res) {
 
 //Increase poll counter
 router.post('/pollCount',function (req, res) {
-    let option = req.body.optionSelected;
+    let option = req.body.option;
     let username = req.body.username;
-    let poll_id = req.body._id;
+    let pollId = req.body.poll_id;
+    Poll.findOne({_id:pollId},function (err, poll) {
+        let data = {success:"0",data:"",optionOne:"0",optionTwo:"0"};
+        if(err){
+            console.log(err);
+            res.send(data);
+        }else{
+            console.log("Found poll");
+            SavedPoll.findOne({username:username,poll_id:pollId},function (err, savedPoll) {
+                console.log("SP: " + savedPoll);
+                if(err){
+                    console.log(err);
+                    res.send(data);
+                }else{
+                    if(savedPoll == null){
+                        let savedPoll = SavedPoll();
+                        savedPoll.username = username;
+                        savedPoll.poll_id = pollId;
+                        savedPoll.save(function (err, savedPollDetails) {
+                            if(err){
+                                console.log("Error saving poll for user");
+                            }else{
+                                console.log("Saved poll for user");
+                                if(option == "0"){
+                                    Poll.findOneAndUpdate({_id:pollId},{
+                                        $inc: {
+                                            optionOneCount:1
+                                        }
+                                    },{new: true},function (err, savedPoll) {
+                                        if(savedPoll){
+                                            data.success = "1";
+                                            data.optionOne = savedPoll.optionOneCount;
+                                            data.optionTwo = savedPoll.optionTwoCount;
+                                            res.send(data);
+                                        }else{
+                                            data.data = err;
+                                            res.send(data);
+                                        }
+                                    });
+                                }else{
+                                    Poll.findOneAndUpdate({_id:pollId},{
+                                        $inc: {
+                                            optionTwoCount:1
+                                        }
+                                    },{new: true},function (err, savedPoll) {
+                                        if(savedPoll){
+                                            data.success = "1";
+                                            data.optionOne = savedPoll.optionOneCount;
+                                            data.optionTwo = savedPoll.optionTwoCount;
+                                            res.send(data);
+                                        }else{
+                                            data.data = err;
+                                            res.send(data);
+                                        }
+                                    });
+                                }
+
+                            }
+                        });
+                    }else{
+                        data.data = "Already voted";
+                        res.send(data);
+                    }
+                }
+            });
+
+        }
+    });
 
 });
 
@@ -378,8 +477,6 @@ router.post('/updateNews', function (req, res) {
             url: req.body.url,
             category: req.body.category,
             tags:req.body.category.split(', ').map(k => k.toLowerCase()),
-            tagPrimary: req.body.tagPrimary,
-            tagSecondary: req.body.tagSecondary,
             imageURL: req.body.imageURL,
             source: req.body.source,
             count: req.body.count,
