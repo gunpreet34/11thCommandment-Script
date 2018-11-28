@@ -40,6 +40,8 @@ let newsSchema = new mongoose.Schema({
     },uniqueUrl:{
         type:String,
         required:true
+    },type:{
+        type:String
     }
 });
 

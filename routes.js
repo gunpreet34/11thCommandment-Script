@@ -228,6 +228,7 @@ router.post('/addPoll', function (req, res) {
     poll.optionOneCount = 0;
     poll.optionTwoCount = 0;
     poll.date = new Date().getTime() / 1000;
+    poll.type = "Poll";
     poll.shareUrl = poll.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
     poll.shareUrl += "_";
     let date = poll.date.split('.');
@@ -428,6 +429,7 @@ router.post('/postNews', function (req, res) {
     newNews.source = req.body.source;
     newNews.date = new Date().getTime() / 1000;
     newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
+    newNews.type = "News";
     //newNews.uniqueUrl = "https://commandment-api.herokuapp.com/news/";
     newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
     let date = newNews.date.split('.');
