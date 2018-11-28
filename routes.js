@@ -394,6 +394,7 @@ router.post('/postNews', function (req, res) {
             }
             newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
             newNews.type = req.body.type;
+            newNews.question = req.body.question;
             newNews.optionOne = req.body.optionOne;
             newNews.optionTwo = req.body.optionTwo;
             newNews.optionOneCount = 0;
@@ -441,7 +442,6 @@ router.post('/postNews', function (req, res) {
                     }
                 });
             });
-
             newNews.save(function (err, savedNews) {
                 if (err) {
                     try {
