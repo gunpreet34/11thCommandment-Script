@@ -437,7 +437,7 @@ router.post('/postNews', function (req, res) {
                                 if (cat.charAt(cat.length) == ',') {
                                     cat = cat.substr(0, cat.length - 2);
                                 }
-                                newCat.category = cat;
+                                /*newCat.category = cat;
 
                                 newCat.save(function (err, savedCat) {
                                     if (err) {
@@ -448,7 +448,7 @@ router.post('/postNews', function (req, res) {
                                         }
                                         console.log(savedCat);
                                     }
-                                });
+                                });*/
                             }
                         }
                     }
