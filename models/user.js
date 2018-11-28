@@ -4,6 +4,8 @@ let userSchema = new mongoose.Schema({
         type:String,
         unique:true,
         index:true
+    },access:{
+        type:Number,
     },
     fb_id:{
         type:String,
@@ -12,6 +14,7 @@ let userSchema = new mongoose.Schema({
     },
     gmail_id:{
         type:String,
+        unique:true
     },gmail_number:{
         type:Number,
     },

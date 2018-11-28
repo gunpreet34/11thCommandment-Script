@@ -10,8 +10,7 @@ let BookmarkedNews = require('./models/bookmarkedNews');
 let Cat = require('./models/category');
 let Poll = require('./models/poll');
 let SavedPoll = require('./models/savedPoll');
-
-
+let Admin = require('./models/admin');
 
 //Register post request
 /*router.get('/registerAdmin',function (req, res) {
@@ -113,7 +112,8 @@ router.post('/registerSuccess',function (req, res) {
     let access = req.body.access;
     let password = req.body.password;
     let number = req.body.number;
-    console.log(name + " " + email+ " " + access + " " + password + " " + number);
+    Admin
+    res.send('Successfully submitted');
 });
 
 router.post('/register', function (req, res) {
@@ -223,9 +223,15 @@ router.post('/addPoll', function (req, res) {
     poll.url = req.body.url;
     poll.imageURL = req.body.imageURL;
     poll.question = req.body.question;
+    poll.optionOne = req.body.optionOne;
+    poll.optionTwo = req.body.optionTwo;
     poll.optionOneCount = 0;
     poll.optionTwoCount = 0;
     poll.date = new Date().getTime() / 1000;
+    poll.shareUrl = poll.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
+    poll.shareUrl += "_";
+    let date = poll.date.split('.');
+    poll.shareUrl += date[0];
     poll.save(function (err, savedPoll) {
         if (err) {
             try {
@@ -402,7 +408,8 @@ router.get("/getPoll/:username",function (req, res) {
             console.log(err);
             res.send(data);
         }else{
-            data = savedPolls;
+            data.success = "1";
+            data.data = savedPolls;
             res.send(data);
         }
     });

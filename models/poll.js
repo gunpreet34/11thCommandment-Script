@@ -30,6 +30,8 @@ let pollSchema = new mongoose.Schema({
     },
     date:{
         type:String
+    },shareUrl:{
+        type:String
     }
 });
 
