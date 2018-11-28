@@ -1,8 +1,6 @@
 let express = require('express');
 let router = express.Router();
 let sortJson = require('sort-json-array');
-let fs = require('fs');
-
 
 let User = require('./models/user');
 let News = require('./models/news');
@@ -110,14 +108,6 @@ router.post('/login', function (req, res) {
 router.post('/addCategory', function (req, res) {
     let cat = Cat();
     cat.category = req.body.category;
-    /*let image = req.body.image;
-    image = image.split(';base64,').pop();
-    fs.writeFile(cat.category + ".jpg",image,{encoding:'base64'},function (err) {
-        if(!err)
-            console.log('File created');
-        else
-            console.log('Error');
-    });*/
     cat.save({category:req.body.category},function (err, result) {
         if(err){
             res.send(err);
@@ -644,7 +634,7 @@ router.post('/deleteNews', function (req, res) {
 
 });
 
-//Get all news
+//Get verified news - for users
 router.get('/getNews', function (req, res) {
     News.find({verify:true}, function (err, news) {
         let data = {success: "0", data: ''};
@@ -660,7 +650,21 @@ router.get('/getNews', function (req, res) {
     });
 });
 
-//Get news by uniqueUrl
+//Get all news - for authors
+router.get('/getAllNews', function (req, res) {
+    News.find({}, function (err, news) {
+        let data = {success: "0", data: ''};
+        if (err) {
+            console.log(err);
+            res.send(data);
+        }
+        data.success = "1";
+        news = sortJson(news,'date','des');
+        data.data = news;
+        res.send(data);
+        //console.log(data)
+    });
+});
 
 
 //Get news by category
@@ -720,13 +724,13 @@ router.post('/searchNewsByTitle', function (req, res) {
     }
     console.info(req.body.category);
 
-    News.find({titleSearch: {$regex: '^' + req.body.title}},{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, callback);
+    News.find({titleSearch: {$regex: '^' + req.body.title},verify:true},{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, callback);
 
 });
 
 //Get news by id
 router.post('/getNewsById/:id',function (req,res) {
-    News.findOne({_id:req.params.id},{titleSearch:0,count:0},function (err,news) {
+    News.findOne({_id:req.params.id,verify:true},{titleSearch:0,count:0},function (err,news) {
         let data = {success: "0", data: ''};
         if(err){
             res.send(data);
@@ -741,7 +745,7 @@ router.post('/getNewsById/:id',function (req,res) {
 
 //Get news by title
 router.post('/getNewsByTitle',function (req,res) {
-   News.findOne({title:req.body.title},{titleSearch:0,date:0,count:0},function (err,news) {
+   News.findOne({title:req.body.title,verify:true},{titleSearch:0,date:0,count:0},function (err,news) {
        let data = {success: "0", data: ''};
        if(err){
            res.send(data);
