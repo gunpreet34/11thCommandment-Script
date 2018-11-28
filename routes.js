@@ -299,15 +299,15 @@ router.post('/deletePoll', function (req, res) {
 router.post('/pollCount',function (req, res) {
     let option = req.body.option;
     let username = req.body.username;
-    let pollId = req.body.poll_id;
-    Poll.findOne({_id:pollId},function (err, poll) {
+    let newsId = req.body.news_id;
+    News.findOne({_id:newsId},function (err, news) {
         let data = {success:"0",data:"",optionOne:"0",optionTwo:"0"};
         if(err){
             console.log(err);
             res.send(data);
         }else{
             console.log("Found poll");
-            SavedPoll.findOne({username:username,poll_id:pollId},function (err, savedPoll) {
+            SavedPoll.findOne({username:username,poll_id:newsId},function (err, savedPoll) {
                 console.log("SP: " + savedPoll);
                 if(err){
                     console.log(err);
@@ -316,47 +316,32 @@ router.post('/pollCount',function (req, res) {
                     if(savedPoll == null){
                         let savedPoll = SavedPoll();
                         savedPoll.username = username;
-                        savedPoll.poll_id = pollId;
+                        savedPoll.poll_id = newsId;
                         savedPoll.option = option;
                         savedPoll.save(function (err, savedPollDetails) {
                             if(err){
                                 console.log("Error saving poll for user");
                             }else{
                                 console.log("Saved poll for user");
+                                let incValue;
                                 if(option == "0"){
-                                    Poll.findOneAndUpdate({_id:pollId},{
-                                        $inc: {
-                                            optionOneCount:1
-                                        }
-                                    },{new: true},function (err, savedPoll) {
-                                        if(savedPoll){
-                                            data.success = "1";
-                                            data.optionOne = savedPoll.optionOneCount;
-                                            data.optionTwo = savedPoll.optionTwoCount;
-                                            res.send(data);
-                                        }else{
-                                            data.data = err;
-                                            res.send(data);
-                                        }
-                                    });
+                                    incValue = {optionOneCount:1};
                                 }else{
-                                    Poll.findOneAndUpdate({_id:pollId},{
-                                        $inc: {
-                                            optionTwoCount:1
-                                        }
-                                    },{new: true},function (err, savedPoll) {
-                                        if(savedPoll){
-                                            data.success = "1";
-                                            data.optionOne = savedPoll.optionOneCount;
-                                            data.optionTwo = savedPoll.optionTwoCount;
-                                            res.send(data);
-                                        }else{
-                                            data.data = err;
-                                            res.send(data);
-                                        }
-                                    });
+                                    incValue = {optionTwoCount:1};
                                 }
-
+                                News.findOneAndUpdate({_id:newsId},{
+                                    $inc: incValue
+                                },{new: true},function (err, savedPoll) {
+                                    if(savedPoll){
+                                        data.success = "1";
+                                        data.optionOne = savedPoll.optionOneCount;
+                                        data.optionTwo = savedPoll.optionTwoCount;
+                                        res.send(data);
+                                    }else{
+                                        data.data = err;
+                                        res.send(data);
+                                    }
+                                });
                             }
                         });
                     }else{
@@ -410,7 +395,11 @@ router.post('/postNews', function (req, res) {
                 newNews.verify = false;
             }
             newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
-            newNews.type = "News";
+            newNews.type = req.body.type;
+            newNews.optionOne = req.body.optionOne;
+            newNews.optionTwo = req.body.optionTwo;
+            newNews.optionOneCount = 0;
+            newNews.optionTwoCount = 0;
             newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
             let date = newNews.date.split('.');
             newNews.uniqueUrl += date[0];
@@ -486,9 +475,9 @@ router.post('/updateNews', function (req, res) {
             user_access = adminUser.access;
             let set;
             if(user_access){
-                set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:true};
+                set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:true,type:req.body.type,question:req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo};
             }else{
-                set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:false};
+                set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:false,type:req.body.type,question:req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo};
             }
 
             News.findOneAndUpdate({_id: req.body._id}, {

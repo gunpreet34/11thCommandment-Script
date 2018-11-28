@@ -43,6 +43,23 @@ let newsSchema = new mongoose.Schema({
         unique:true
     },type:{
         type:String
+    },
+    question:{
+        type:String
+    },
+    optionOneCount:{
+        type:Number,
+        default:0
+    },
+    optionTwoCount:{
+        type:Number,
+        default:0
+    },
+    optionOne:{
+        type:String
+    },
+    optionTwo:{
+        type:String
     }
 });
 
