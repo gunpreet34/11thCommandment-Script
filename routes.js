@@ -657,7 +657,7 @@ router.get('/getAllNews/:user_id', function (req, res) {
         if (err) {
             console.log("Error in getAllNews while finding user: " + err);
         } else {
-            if(adminUser.access.equals("1")){
+            if(adminUser.access == 1){
                 News.find({}, function (err, news) {
                     let data = {success: "0", data: ''};
                     if (err) {
