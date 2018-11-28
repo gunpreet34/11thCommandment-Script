@@ -487,7 +487,7 @@ router.post('/updateNews', function (req, res) {
             let set;
             if(user_access){
                 set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:true};
-            }else {
+            }else{
                 set = {title: req.body.title,titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),description: req.body.description,url: req.body.url,category: req.body.category,tags:req.body.category.split(', ').map(k => k.toLowerCase()),imageURL: req.body.imageURL,source: req.body.source,count: req.body.count,verify:false};
             }
 
@@ -651,19 +651,44 @@ router.get('/getNews', function (req, res) {
 });
 
 //Get all news - for authors
-router.get('/getAllNews', function (req, res) {
-    News.find({}, function (err, news) {
-        let data = {success: "0", data: ''};
+router.get('/getAllNews/:user_id', function (req, res) {
+    let user_id = req.params.user_id;
+    Admin.findOne({_id:user_id},function (err, adminUser) {
         if (err) {
-            console.log(err);
-            res.send(data);
+            console.log("Error in getAllNews while finding user: " + err);
+        } else {
+            if(adminUser.access.equals("1")){
+                News.find({}, function (err, news) {
+                    let data = {success: "0", data: ''};
+                    if (err) {
+                        console.log(err);
+                        res.send(data);
+                    }
+                    data.success = "1";
+                    news = sortJson(news,'date','des');
+                    data.data = news;
+                    res.send(data);
+                    //console.log(data)
+                });
+            }else{
+                News.find({verify:false}, function (err, news) {
+                    let data = {success: "0", data: ''};
+                    if (err) {
+                        console.log(err);
+                        res.send(data);
+                    }
+                    data.success = "1";
+                    news = sortJson(news,'date','des');
+                    data.data = news;
+                    res.send(data);
+                    //console.log(data)
+                });
+            }
         }
-        data.success = "1";
-        news = sortJson(news,'date','des');
-        data.data = news;
-        res.send(data);
-        //console.log(data)
     });
+
+
+
 });
 
 
