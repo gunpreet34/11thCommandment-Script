@@ -22,7 +22,7 @@
 </head>
 
 <body>
-    <form action='/registerSuccess' method="post">
+    <form action='/registerSuccess' method="post" encrypt="multipart/form-data">
         <div class="container" style="margin:auto; padding:50px;">
             <p>Enter The Details</p>
             <div class="row">
@@ -54,7 +54,7 @@
                     </div>
                     <div class="form-group">
                         <label>Access level</label>
-                        <select class="form-control" name="cat">
+                        <select class="form-control" name="access" id="access">
                             <option value = "0">Editor</option>
                             <option value = "1">Admin</option>
                         </select>

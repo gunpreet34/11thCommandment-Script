@@ -34,6 +34,9 @@ let pollSchema = new mongoose.Schema({
         type:String
     },type:{
         type:String
+    },verify:{
+        type:Boolean,
+        default:false
     }
 });
 

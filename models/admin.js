@@ -5,7 +5,7 @@ let adminSchema = new mongoose.Schema({
     },password:{
         type:String
     },access:{
-       type:Number,
+       type:Number
     },mobile:{
         type:Number
     },email:{

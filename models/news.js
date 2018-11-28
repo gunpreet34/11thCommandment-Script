@@ -39,7 +39,8 @@ let newsSchema = new mongoose.Schema({
         default:false
     },uniqueUrl:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },type:{
         type:String
     }
