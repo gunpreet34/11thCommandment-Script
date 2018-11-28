@@ -780,7 +780,7 @@ router.post('/getNewsById/:id',function (req,res) {
 
 //Get news by title
 router.post('/getNewsByTitle',function (req,res) {
-   News.findOne({title:req.body.title,verify:true},{titleSearch:0,date:0,count:0},function (err,news) {
+   News.findOne({title:req.body.title},{titleSearch:0,date:0,count:0},function (err,news) {
        let data = {success: "0", data: ''};
        if(err){
            res.send(data);
