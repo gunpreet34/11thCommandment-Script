@@ -735,21 +735,31 @@ router.get('/news/:url', function (req, res) {
 
 //Search news using title
 router.post('/searchNewsByTitle', function (req, res) {
-    let callback = (err, newsArray) => {
-        let data = {success: "0", data: ''};
+    let user_id = req.body.user_id;
+    Admin.findOne({_id:user_id},function (err, adminUser) {
         if (err) {
-            console.info(err);
-            res.send(data)
-        } else {
-            console.log(newsArray);
-            data.success = "1";
-            data.data = newsArray;
-            res.send(data);
+            console.log("Error in getAllNews while finding user: " + err);
+        }else {
+            let searchCriteria;
+            if(adminUser.access == 1){
+                searchCriteria = {titleSearch: {$regex: '^' + req.body.title}};
+            }else {
+                searchCriteria = {titleSearch: {$regex: '^' + req.body.title},verify:false};
+            }
+            News.find(searchCriteria,{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, function (err, newsArray) {
+                let data = {success: "0", data: ''};
+                if (err) {
+                    console.info(err);
+                    res.send(data)
+                } else {
+                    console.log(newsArray);
+                    data.success = "1";
+                    data.data = newsArray;
+                    res.send(data);
+                }
+            });
         }
-    }
-    console.info(req.body.category);
-
-    News.find({titleSearch: {$regex: '^' + req.body.title},verify:true},{tags:0,titleSearch:0,url:0,tagPrimary:0,tagSecondary:0,source:0,date:0,count:0,category:0}, callback);
+    });
 
 });
 
