@@ -574,7 +574,7 @@ router.post('/deleteNews', function (req, res) {
             });
 
             let data = {success:"0",data:""};
-            if(user_access || verified){
+            if(user_access || !verified){
                 let tags = "";
                 News.findOne({_id: req.body._id},function (err, news) {
                     if (err) {
