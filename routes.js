@@ -765,7 +765,7 @@ router.post('/searchNewsByTitle', function (req, res) {
 
 //Get news by id
 router.post('/getNewsById/:id',function (req,res) {
-    News.findOne({_id:req.params.id,verify:true},{titleSearch:0,count:0},function (err,news) {
+    News.findOne({_id:req.params.id},{titleSearch:0,count:0},function (err,news) {
         let data = {success: "0", data: ''};
         if(err){
             res.send(data);
