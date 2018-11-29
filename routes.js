@@ -241,8 +241,8 @@ router.post('/updatePoll', function (req, res) {
 */
 
 //Get all polls
-/*router.get('/getPolls',function (req, res) {
-    Poll.find({verify:true},{optionOneCount:0,optionTwoCount:0}, function (err, poll) {
+router.get('/getPolls',function (req, res) {
+    News.find({type:"Poll",verify:true},{optionOneCount:0,optionTwoCount:0}, function (err, poll) {
         let data = {success: "0", data: ''};
         if (err) {
             console.log(err);
@@ -254,7 +254,7 @@ router.post('/updatePoll', function (req, res) {
             res.send(data);
         }
     });
-});*/
+});
 
 //Delete polls post request
 /*
@@ -360,7 +360,6 @@ router.post('/pollCount',function (req, res) {
 
 });
 
-/*
 //Get polled news by user
 router.get("/getPoll/:username",function (req, res) {
     let data = {success:"0",data:""};
@@ -376,7 +375,6 @@ router.get("/getPoll/:username",function (req, res) {
     });
 });
 
-*/
 //Post-news/poll
 router.post('/postNews', function (req, res) {
     let user_id = req.body.user_id;
