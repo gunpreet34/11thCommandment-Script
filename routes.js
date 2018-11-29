@@ -152,6 +152,7 @@ router.get('/getCategoriesWithNews', function (req, res) {
 });
 
 //Adding poll post request
+/*
 router.post('/addPoll', function (req, res) {
     let user_id = req.body.user_id;
     let user_access = 0;
@@ -199,8 +200,10 @@ router.post('/addPoll', function (req, res) {
 
 
 });
+*/
 
 //Update Poll post request
+/*
 router.post('/updatePoll', function (req, res) {
     let user_id = req.body.user_id;
     let user_access = 0;
@@ -235,9 +238,10 @@ router.post('/updatePoll', function (req, res) {
     });
 
 });
+*/
 
 //Get all polls
-router.get('/getPolls',function (req, res) {
+/*router.get('/getPolls',function (req, res) {
     Poll.find({verify:true},{optionOneCount:0,optionTwoCount:0}, function (err, poll) {
         let data = {success: "0", data: ''};
         if (err) {
@@ -250,9 +254,10 @@ router.get('/getPolls',function (req, res) {
             res.send(data);
         }
     });
-});
+});*/
 
 //Delete polls post request
+/*
 router.post('/deletePoll', function (req, res) {
     let user_id = req.body.user_id;
     let user_access = 0;
@@ -293,6 +298,7 @@ router.post('/deletePoll', function (req, res) {
 
 });
 
+*/
 //Increase poll counter
 router.post('/pollCount',function (req, res) {
     let option = req.body.option;
@@ -354,6 +360,7 @@ router.post('/pollCount',function (req, res) {
 
 });
 
+/*
 //Get polled news by user
 router.get("/getPoll/:username",function (req, res) {
     let data = {success:"0",data:""};
@@ -369,7 +376,8 @@ router.get("/getPoll/:username",function (req, res) {
     });
 });
 
-//Post-news
+*/
+//Post-news/poll
 router.post('/postNews', function (req, res) {
     let user_id = req.body.user_id;
     let user_access = 0;
@@ -567,7 +575,7 @@ router.post('/deleteNews', function (req, res) {
             let verified = false;
             News.findOne({_id: req.body._id},function (err,news) {
                 if(err){
-                    console.log("Finding poll error: " + err);
+                    console.log("Finding news error: " + err);
                 }else {
                     verified = news.verify;
                 }
@@ -689,6 +697,7 @@ router.get('/getNewsByCategory/:category', function (req, res) {
         } else {
             console.log(newsArray);
             data.success = "1";
+            newsArray = sortJson(newsArray,'date','des');
             data.data = newsArray;
             res.send(data);
         }
