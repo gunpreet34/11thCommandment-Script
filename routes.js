@@ -690,7 +690,7 @@ router.post('/deleteNews', function (req, res) {
                             console.log(err);
                         } else {
                             //console.log("News = " + news);
-                            tags = news.tags;
+                            tags = news.category.split(', ');
                             console.log("News tag: " + news.tags);
                             News.deleteOne({_id: req.body._id}, function (err, results) {
                                 if (err) {
@@ -703,12 +703,15 @@ router.post('/deleteNews', function (req, res) {
                                                 $inc: {
                                                     count: -1
                                                 }
-                                            }, function (err, success) {
+                                            }, function (err, updatedCat) {
                                                 if (err) {
                                                     console.log("Error deleting category")
                                                 } else {
                                                     data.success = "1";
                                                     data.data = "Deleted news and category";
+                                                    if(updatedCat.count < 0){
+                                                        Cat.findOneAndDelete({category: category});
+                                                    }
                                                     res.send(data);
                                                 }
                                             });
