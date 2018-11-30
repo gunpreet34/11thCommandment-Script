@@ -471,7 +471,7 @@ router.post('/postNews', function (req, res) {
                 newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
                 let date = newNews.date.split('.');
                 newNews.uniqueUrl += date[0];
-                newNews.tags.forEach((cat) => {
+                newNews.category.split(', ').forEach((cat) => {
                     Cat.findOneAndUpdate({category: req.body.category}, {
                         $inc: {
                             count: 1
