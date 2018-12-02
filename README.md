@@ -1,18 +1,43 @@
 # 11th Commandment API
 
-Various routes:
+## Various routes:
 
-For user registration
+###For user 
+>'post' /register
+```sh 
+username:String(unique,required)
+password:String(required)
+response:String(Toast to be shown)
+```
 
-/register -> post request
-send - username(unique),password
-response - string
+>'post' /login
+```sh 
+username:String(unique,required)
+password:String(required)
+response:String("Found","Not Found")
+```
 
-/login -> post request
-send - username,password
-response - string ("Found","Not Found")
+###For admin registration
+>'get' /registerAdmin -> To load the webpage for registration
 
-For news
+>'post' /registerSuccess
+```sh 
+name:String(required)
+email:String(Unique.required)
+password:String(required)
+access:String ("0" for Editor and "1" for Admin) - (Required)
+number:Number(Required)
+response:Json - {success:String,data:Msg to be shown}
+```
+
+>'post' /adminLogin
+```sh 
+email:String(Unique.required)
+password:String(required)
+response:Json - {success:String,data:Msg to be shown}
+```
+
+###For news
 
 /postNews -> post request
 send - title(unique),description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
@@ -121,3 +146,11 @@ option:String(Required) - Either "0" or "1"
 username:String(Required)
 news_id:String(Required)
 response:Json - {success:String, data:(Message)String, optionOne:Number, optionTwo:Number}
+```
+
+###Get polls for a user
+>'get' /getPoll/:username
+```sh
+response: Json - {success:String,data:votedPolls}
+```
+

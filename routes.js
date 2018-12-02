@@ -33,6 +33,7 @@ router.post('/registerSuccess',function (req, res) {
                     data.data = err;
                 }else{
                     data.success = "1";
+                    data.data = "User " + req.body.name + " saved successfully";
                     data.data = savedAdmin.data;
                 }
                 res.send(data);
@@ -51,7 +52,7 @@ router.post('/registerSuccess',function (req, res) {
 
 //Admin login post request handler
 router.post('/adminLogin',function (req, res) {
-    let data = {success:0,data:""};
+    let data = {success:0,data:"",};
     try{
         let email = req.body.email;
         let password = req.body.password;
@@ -92,7 +93,7 @@ router.post('/register', function (req, res) {
                 }
             }
             console.log(savedUser);
-            res.send("Save success");
+            res.send("Registered successfully");
         });
     }catch(err){
         data.data = "Error in /register: " + err;
@@ -354,7 +355,7 @@ router.post('/deletePoll', function (req, res) {
 */
 //Increase poll counter
 router.post('/pollCount',function (req, res) {
-    let data = {success: "0", data: "", optionOneCount: "0", optionTwoCount: "0"};
+    let data = {success: "0", data: "", optionOneCount:0 , optionTwoCount:0};
     try {
         let option = req.body.option;
         let username = req.body.username;
