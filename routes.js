@@ -354,7 +354,7 @@ router.post('/deletePoll', function (req, res) {
 */
 //Increase poll counter
 router.post('/pollCount',function (req, res) {
-    let data = {success: "0", data: "", optionOne: "0", optionTwo: "0"};
+    let data = {success: "0", data: "", optionOneCount: "0", optionTwoCount: "0"};
     try {
         let option = req.body.option;
         let username = req.body.username;
@@ -392,8 +392,9 @@ router.post('/pollCount',function (req, res) {
                                     }, {new: true}, function (err, savedPoll) {
                                         if (savedPoll) {
                                             data.success = "1";
-                                            data.optionOne = savedPoll.optionOneCount;
-                                            data.optionTwo = savedPoll.optionTwoCount;
+                                            data.data = "Voted successfully";
+                                            data.optionOneCount = savedPoll.optionOneCount;
+                                            data.optionTwoCount = savedPoll.optionTwoCount;
                                             res.send(data);
                                         } else {
                                             data.data = err;
