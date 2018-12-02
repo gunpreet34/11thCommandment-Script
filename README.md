@@ -120,3 +120,4 @@ Response - json - {success,data} - success in string("0" or "1") and data is jso
 option:String(Required) - Either "0" or "1"
 username:String(Required)
 news_id:String(Required)
+response:Json - {success:String, data:(Message)String, optionOne:Number", optionTwo:Number}
