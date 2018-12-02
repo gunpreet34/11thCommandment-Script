@@ -1,3 +1,5 @@
+# 11th Commandment API
+
 Various routes:
 
 For user registration
@@ -112,3 +114,9 @@ Get categories - Only those categories which have news in it
 Nothing to send
 Response - json - {success,data} - success in string("0" or "1") and data is json containing categories
 
+### Increase poll count
+>'post' /pollCount
+```sh 
+option:String(Required) - Either "0" or "1"
+username:String(Required)
+news_id:String(Required)
