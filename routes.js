@@ -419,7 +419,7 @@ router.post('/pollCount',function (req, res) {
             }
         });
     }catch(err){
-        data.data = "Error in /getPolls: " + err;
+        data.data = "Error in /pollCount: " + err;
         console.log(data.data);
         res.send(data)
     }
@@ -429,7 +429,7 @@ router.post('/pollCount',function (req, res) {
 router.post("/getPoll",function (req, res) {
     let data = {success:"0",data:""};
     try {
-        SavedPoll.find({username: req.body.username, verify: true}, {
+        SavedPoll.find({username: req.body.username}, {
             optionOneCount: 0,
             optionTwoCount: 0
         }, function (err, savedPolls) {
@@ -438,6 +438,7 @@ router.post("/getPoll",function (req, res) {
                 res.send(data);
             } else {
                 data.success = "1";
+                console.log(savedPolls);
                 data.data = savedPolls;
                 res.send(data);
             }
