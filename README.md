@@ -2,7 +2,7 @@
 
 ## Various routes:
 
-###For user 
+### For user 
 >'post' /register
 ```sh 
 username:String(unique,required)
@@ -17,7 +17,7 @@ password:String(required)
 response:String("Found","Not Found")
 ```
 
-###For admin registration
+### For admin registration
 >'get' /registerAdmin -> To load the webpage for registration
 
 >'post' /registerSuccess
@@ -37,7 +37,7 @@ password:String(required)
 response:Json - {success:String,data:Msg to be shown}
 ```
 
-###For news
+### For news
 
 /postNews -> post request
 send - title(unique),description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
@@ -148,7 +148,7 @@ news_id:String(Required)
 response:Json - {success:String, data:(Message)String, optionOne:Number, optionTwo:Number}
 ```
 
-###Get polls for a user
+### Get polls for a user
 >'post' /getPoll
 ```sh
 username:String(Required)
