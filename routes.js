@@ -410,8 +410,8 @@ router.post('/pollCount',function (req, res) {
                             News.findOne({_id:newsId},function (err, savedPoll) {
                                 data.optionOneCount = savedPoll.optionOneCount;
                                 data.optionTwoCount = savedPoll.optionTwoCount;
+                                res.send(data);
                             });
-                            res.send(data);
                         }
                     }
                 });
