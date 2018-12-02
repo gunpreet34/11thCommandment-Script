@@ -149,8 +149,9 @@ response:Json - {success:String, data:(Message)String, optionOne:Number, optionT
 ```
 
 ###Get polls for a user
->'get' /getPoll/:username
+>'post' /getPoll
 ```sh
+username:String(Required)
 response: Json - {success:String,data:votedPolls}
 ```
 

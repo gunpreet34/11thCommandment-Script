@@ -405,7 +405,10 @@ router.post('/pollCount',function (req, res) {
                                 }
                             });
                         } else {
+                            data.success = "1";
                             data.data = "Already voted";
+                            data.optionOneCount = savedPoll.optionOneCount;
+                            data.optionTwoCount = savedPoll.optionTwoCount;
                             res.send(data);
                         }
                     }
@@ -421,10 +424,10 @@ router.post('/pollCount',function (req, res) {
 });
 
 //Get polled news by user
-router.get("/getPoll/:username",function (req, res) {
+router.post("/getPoll",function (req, res) {
     let data = {success:"0",data:""};
     try {
-        SavedPoll.find({username: req.params.username, verify: true}, {
+        SavedPoll.find({username: req.body.username, verify: true}, {
             optionOneCount: 0,
             optionTwoCount: 0
         }, function (err, savedPolls) {
@@ -438,7 +441,7 @@ router.get("/getPoll/:username",function (req, res) {
             }
         });
     }catch(err){
-        data.data = "Error in /getPoll/:username: " + err;
+        data.data = "Error in /getPoll: " + err;
         console.log(data.data);
         res.send(data)
     }
