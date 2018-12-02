@@ -407,8 +407,10 @@ router.post('/pollCount',function (req, res) {
                         } else {
                             data.success = "1";
                             data.data = "Already voted";
-                            data.optionOneCount = savedPoll.optionOneCount;
-                            data.optionTwoCount = savedPoll.optionTwoCount;
+                            News.findOne({_id:newsId},function (err, savedPoll) {
+                                data.optionOneCount = savedPoll.optionOneCount;
+                                data.optionTwoCount = savedPoll.optionTwoCount;
+                            });
                             res.send(data);
                         }
                     }
