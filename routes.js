@@ -292,7 +292,7 @@ router.post('/updatePoll', function (req, res) {
 router.get('/getPolls',function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        News.find({type: "Poll", verify: true}, {optionOneCount: 0, optionTwoCount: 0}, function (err, poll) {
+        News.find({type: "Poll", verify: true}, function (err, poll) {
             if (err) {
                 console.log(err);
                 res.send(data);
