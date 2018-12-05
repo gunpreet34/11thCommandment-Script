@@ -429,10 +429,7 @@ router.post('/pollCount',function (req, res) {
 router.post("/getPoll",function (req, res) {
     let data = {success:"0",data:""};
     try {
-        SavedPoll.find({username: req.body.username}, {
-            optionOneCount: 0,
-            optionTwoCount: 0
-        }, function (err, savedPolls) {
+        SavedPoll.find({username: req.body.username}, function (err, savedPolls) {
             if (err) {
                 console.log(err);
                 res.send(data);
