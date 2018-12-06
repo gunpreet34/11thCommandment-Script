@@ -135,11 +135,11 @@ router.post('/addCategory', function (req, res) {
     try {
         let cat = Cat();
         cat.category = req.body.category;
-        let image = req.body.image;
-        let data = image.replace(/^data:image\/\w+;base64,/, "");
+        //let image = req.body.image;
+        /*let data = image.replace(/^data:image\/\w+;base64,/, "");
         let buffer = new Buffer(data, 'base64');
         fs.writeFile(cat.category, buffer);
-        cat.save({category: req.body.category}, function (err, result) {
+        */cat.save({category: req.body.category}, function (err, result) {
             if (err) {
                 res.send(err);
             } else {
