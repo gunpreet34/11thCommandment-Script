@@ -720,6 +720,7 @@ router.post('/deleteNews', function (req, res) {
                                                     data.success = "1";
                                                     data.data = "Deleted news and category";
                                                     if(updatedCat.count < 0){
+                                                        console.log("Working fine till here");
                                                         Cat.findOneAndDelete({category: category});
                                                     }
                                                     res.send(data);
