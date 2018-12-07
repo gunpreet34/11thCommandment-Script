@@ -918,6 +918,53 @@ router.post('/searchNewsByTitle', function (req, res) {
 
 });
 
+//Search news using title
+router.post('/searchAdvertisementByTitle', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        let user_id = req.body.user_id;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
+            if (err) {
+                console.log("Error in getAllNews while finding user: " + err);
+            } else {
+                let searchCriteria;
+                if (adminUser.access == 1) {
+                    searchCriteria = {type:"Advertisement",titleSearch: {$regex: '^' + req.body.title}};
+                } else {
+                    searchCriteria = {type:"Advertisement",titleSearch: {$regex: '^' + req.body.title}, verify: false};
+                }
+                News.find(searchCriteria, {
+                    tags: 0,
+                    titleSearch: 0,
+                    url: 0,
+                    tagPrimary: 0,
+                    tagSecondary: 0,
+                    source: 0,
+                    date: 0,
+                    count: 0,
+                    category: 0
+                }, function (err, newsArray) {
+                    if (err) {
+                        console.info(err);
+                        res.send(data)
+                    } else {
+                        console.log(newsArray);
+                        data.success = "1";
+                        data.data = newsArray;
+                        res.send(data);
+                    }
+                });
+            }
+        });
+    }catch(err){
+        data.data = "Error in /searchNAdvertisementByTitle: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+
+});
+
+
 //Get news by id
 router.post('/getNewsById/:id',function (req,res) {
     let data = {success: "0", data: ''};
