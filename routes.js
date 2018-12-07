@@ -60,9 +60,13 @@ router.post('/adminLogin',function (req, res) {
             if(err){
                 data.data = err;
             }else{
-                data.success="1";
-                data.access = admin.access;
-                data.data = admin._id;
+                if(admin){
+                    data.success="1";
+                    data.access = admin.access;
+                    data.data = admin._id;
+                }else{
+                    data.data = "Not found";
+                }
             }
             res.send(data);
         });
