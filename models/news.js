@@ -43,6 +43,10 @@ let newsSchema = new mongoose.Schema({
         unique:true
     },type:{
         type:String
+    },subType:{
+        type:String
+    },advertisementListCount:{
+        type:Number
     },
     question:{
         type:String

@@ -7,7 +7,7 @@ let User = require('./models/user');
 let News = require('./models/news');
 let BookmarkedNews = require('./models/bookmarkedNews');
 let Cat = require('./models/category');
-let Poll = require('./models/poll');
+//let Poll = require('./models/poll');
 let SavedPoll = require('./models/savedPoll');
 let Admin = require('./models/admin');
 
@@ -32,9 +32,13 @@ router.post('/registerSuccess',function (req, res) {
                 if(err){
                     data.data = err;
                 }else{
-                    data.success = "1";
-                    data.data = "User " + req.body.name + " saved successfully";
-                    data.data = savedAdmin.data;
+                    if(savedAdmin != null){
+                        data.success = "1";
+                        data.data = "User " + req.body.name + " saved successfully";
+                        data.data = savedAdmin.data;
+                    }else{
+                        data.data = "Unexpected Error";
+                    }
                 }
                 res.send(data);
             });
@@ -80,6 +84,7 @@ router.post('/adminLogin',function (req, res) {
 
 //Normal user register post request
 router.post('/register', function (req, res) {
+    let data = {success:0,data:""};
     try {
         let username = req.body.username;
         let password = req.body.password;
@@ -91,23 +96,25 @@ router.post('/register', function (req, res) {
         //Call Mongoose inbuilt save method
         newUser.save(function (err, savedUser) {
             if (err) {
-                try {
-                    res.send(err);
-                } catch (err) {
-                    console.log(err);
+                data.data = err;
+            }else {
+                if(savedUser != null){
+                    data.success = 1;
+                    data.data = "Registered successfully";
+                }else{
+                    data.data = "Already taken";
                 }
             }
-            console.log(savedUser);
-            res.send("Registered successfully");
+            res.send(data);
         });
     }catch(err){
         data.data = "Error in /register: " + err;
-        console.log(data.data);
         res.send(data)
     }
 });
 //Normal user login post request
 router.post('/login', function (req, res) {
+    let data = {success:0,data:""};
     try {
         let username = req.body.username;
         let password = req.body.password;
@@ -115,21 +122,18 @@ router.post('/login', function (req, res) {
         //Find user with given credentials in the database
         User.findOne({username: username, password: password}, function (err, user) {
             if (err) {
-                try {
-                    console.log(err);
-                } catch (err) {
-                    console.log(err);
-                }
+                data.data = err;
             }
             if (!user) {
-                res.send("Not found");
+                data.data = "Invalid credentials";
             } else {
-                console.log(user);
-                res.send("Found");
+                data.success = 1;
+                data.data = "Welcome " + user.name;
             }
+            res.send(data);
         });
     }catch(err){
-        let data = "Error in /login: " + err;
+        data.data = "Error in /login: " + err;
         console.log(data);
         res.send(data)
     }
@@ -166,17 +170,19 @@ router.get('/getCategories', function (req, res) {
         Cat.find({}, function (err, cats) {
             if (err) {
                 console.log(err);
-                res.send(data);
+                data.data = err;
+            }else{
+                if(!cats){
+                    data.data = "Error retrieving categories";
+                }else{
+                    data.success = "1";
+                    data.data = cats;
+                }
             }
-            //console.log(news);
-            data.success = "1";
-            data.data = cats;
             res.send(data);
-            //console.log(data)
         });
     }catch(err){
         data.data = "Error in /getCategories: " + err;
-        console.log(data.data);
         res.send(data)
     }
 });
@@ -204,6 +210,105 @@ router.get('/getCategoriesWithNews', function (req, res) {
     }
 });
 
+//Get all advertisements - verified only - for users
+router.get('/getAdvertisements',function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        News.find({type: "Advertisement", verify: true}, function (err, advertisement) {
+            if (err) {
+                data.data = err;
+            } else {
+                if(!advertisement){
+                    data.success = "1";
+                    advertisement = sortJson(advertisement, 'date', 'des');
+                    data.data = advertisement;
+                }else {
+                    data.data = "Error in finding advertisements";
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getAdvertisements: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+});
+
+//Get only unverified - for authors
+router.get('/getUnverifiedAdvertisements',function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        News.find({type: "Advertisement", verify: false}, function (err, advertisement) {
+            if (err) {
+                data.data = err;
+            } else {
+                if(!advertisement){
+                    data.success = "1";
+                    advertisement = sortJson(advertisement, 'date', 'des');
+                    data.data = advertisement;
+                }else {
+                    data.data = "Error in finding advertisements";
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getUnverifiedAdvertisements: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+});
+
+//Get all advertisements - for authors
+router.get('/getAllAdvertisements/:user_id', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        let user_id = req.params.user_id;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
+            if (err) {
+                console.log("Error in getAllNews while finding user: " + err);
+            } else {
+                if (adminUser.access == 1) {
+
+                    News.find({}, function (err, advertisement) {
+                        if (err) {
+                            console.log(err);
+                            res.send(data);
+                        }else{
+                            if(!advertisement){
+                                data.success = "1";
+                                advertisement = sortJson(advertisement, 'date', 'des');
+                                data.data = advertisement;
+                            }
+                            res.send(data);
+                        }
+                    });
+                } else {
+                    News.find({verify: false}, function (err, advertisement) {
+                        let data = {success: "0", data: ''};
+                        if (err) {
+                            console.log(err);
+                            res.send(data);
+                        }else {
+                            if (!advertisement) {
+                                data.success = "1";
+                                advertisement = sortJson(advertisement, 'date', 'des');
+                                data.data = advertisement;
+                            }
+                            res.send(data);
+                        }
+                    });
+                }
+            }
+        });
+    }catch(err){
+        data.data = "Error in /getAllAdvertisements/:user_id: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+
+});
 
 //Get all polls
 router.get('/getPolls',function (req, res) {
@@ -211,14 +316,17 @@ router.get('/getPolls',function (req, res) {
     try {
         News.find({type: "Poll", verify: true}, function (err, poll) {
             if (err) {
-                console.log(err);
-                res.send(data);
+                data.data = err;
             } else {
-                data.success = "1";
-                poll = sortJson(poll, 'date', 'des');
-                data.data = poll;
-                res.send(data);
+                if(!poll){
+                    data.success = "1";
+                    poll = sortJson(poll, 'date', 'des');
+                    data.data = poll;
+                }else {
+                    data.data = "Error finding polls";
+                }
             }
+            res.send(data);
         });
     }catch(err){
         data.data = "Error in /getPolls: " + err;
@@ -348,54 +456,61 @@ router.post('/postNews', function (req, res) {
                 }
                 newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
                 newNews.type = req.body.type;
+                // If Advertisement
+                newNews.subType = req.body.subType;
+                newNews.advertisementListCount = req.body.advertisementListCount;
+                //If Poll
                 newNews.question = req.body.question;
                 newNews.optionOne = req.body.optionOne;
                 newNews.optionTwo = req.body.optionTwo;
                 newNews.optionOneCount = 0;
                 newNews.optionTwoCount = 0;
+                //Url to be shared
                 newNews.uniqueUrl = newNews.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
                 let date = newNews.date.split('.');
                 newNews.uniqueUrl += date[0];
-                newNews.category.split(', ').forEach((cat) => {
-                    Cat.findOneAndUpdate({category: req.body.category}, {
-                        $inc: {
-                            count: 1
-                        }
-                    }, {returnOriginal: false}, function (err, category) {
-                        if (err) {
-                            try {
-                                console.send("Error incrementing category count");
-                            } catch (err) {
-                                console.log(err);
+                if(newNews.type != "Advertisement"){
+                    newNews.category.split(', ').forEach((cat) => {
+                        Cat.findOneAndUpdate({category: req.body.category}, {
+                            $inc: {
+                                count: 1
                             }
-                        } else {
-                            if (!category) {
-                                console.log("Not found");
+                        }, {returnOriginal: false}, function (err, category) {
+                            if (err) {
+                                try {
+                                    console.send("Error incrementing category count");
+                                } catch (err) {
+                                    console.log(err);
+                                }
                             } else {
-                                if (cat == "") {
-                                    console.log("Empty Category. Not adding");
+                                if (!category) {
+                                    console.log("Not found");
                                 } else {
-                                    let newCat = Cat();
-                                    if (cat.charAt(cat.length) == ',') {
-                                        cat = cat.substr(0, cat.length - 2);
-                                    }
-                                    /*newCat.category = cat;
-
-                                    newCat.save(function (err, savedCat) {
-                                        if (err) {
-                                            try {
-                                                console.log(err);
-                                            } catch (err) {
-                                                console.log(err);
-                                            }
-                                            console.log(savedCat);
+                                    if (cat == "") {
+                                        console.log("Empty Category. Not adding");
+                                    } else {
+                                        let newCat = Cat();
+                                        if (cat.charAt(cat.length) == ',') {
+                                            cat = cat.substr(0, cat.length - 2);
                                         }
-                                    });*/
+                                        /*newCat.category = cat;
+
+                                        newCat.save(function (err, savedCat) {
+                                            if (err) {
+                                                try {
+                                                    console.log(err);
+                                                } catch (err) {
+                                                    console.log(err);
+                                                }
+                                                console.log(savedCat);
+                                            }
+                                        });*/
+                                    }
                                 }
                             }
-                        }
+                        });
                     });
-                });
+                }
                 newNews.save(function (err, savedNews) {
                     if (err) {
                         try {
@@ -640,7 +755,7 @@ router.get('/getNews', function (req, res) {
     }
 });
 
-//Get verified news - for users
+//Get unverified news - for authors
 router.get('/getUnverifiedNews', function (req, res) {
     let data = {success: "0", data: ''};
     try {
