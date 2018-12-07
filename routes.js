@@ -994,9 +994,12 @@ router.post('/getNewsByTitle',function (req,res) {
            if (err) {
                res.send(data);
            } else {
-               console.log(news);
-               data.data = news;
-               data.success = 1;
+               if(!news){
+                   data.data = news;
+                   data.success = 1;
+               }else{
+                   data.data = "Error finding using title";
+               }
                res.send(data);
            }
        });
@@ -1007,6 +1010,28 @@ router.post('/getNewsByTitle',function (req,res) {
    }
 });
 
+//Get advertisement by title
+router.post('/getAdvertisementByTitle',function (req,res) {
+    let data = {success: "0", data: ''};
+    try {
+        News.findOne({type:"Advertisement",title: req.body.title}, {titleSearch: 0, date: 0, count: 0}, function (err, advertisement) {
+            if (err) {
+                res.send(data);
+            } else {
+                if(!advertisement){
+                    data.data = advertisement;
+                    data.success = 1;
+                }else {
+                    data.data = "Error find adv by title";
+                }
+                res.send(data);
+            }
+        });
+    }catch(err){
+        data.data = "Error in /getAdvertisementByTitle : " + err;
+        res.send(data)
+    }
+});
 
 //Bookmarking
 router.post('/bookmark', function (req, res) {
