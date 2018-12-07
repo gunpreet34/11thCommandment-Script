@@ -559,7 +559,9 @@ router.post('/updateNews', function (req, res) {
                         type: req.body.type,
                         question: req.body.question,
                         optionOne: req.body.optionOne,
-                        optionTwo: req.body.optionTwo
+                        optionTwo: req.body.optionTwo,
+                        subType:req.body.subType,
+                        advertisementListCount:req.body.advertisementListCount
                     };
                 } else {
                     set = {
@@ -576,7 +578,9 @@ router.post('/updateNews', function (req, res) {
                         type: req.body.type,
                         question: req.body.question,
                         optionOne: req.body.optionOne,
-                        optionTwo: req.body.optionTwo
+                        optionTwo: req.body.optionTwo,
+                        subType:req.body.subType,
+                        advertisementListCount:req.body.advertisementListCount
                     };
                 }
 
