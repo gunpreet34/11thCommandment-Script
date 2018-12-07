@@ -622,13 +622,33 @@ router.get('/getNews', function (req, res) {
         News.find({verify: true}, function (err, news) {
             if (err) {
                 console.log(err);
-                res.send(data);
+            }else{
+                data.success = "1";
+                news = sortJson(news, 'date', 'des');
+                data.data = news;
             }
-            data.success = "1";
-            news = sortJson(news, 'date', 'des');
-            data.data = news;
             res.send(data);
-            //console.log(data)
+        });
+    }catch(err){
+        data.data = "Error in /getNews: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+});
+
+//Get verified news - for users
+router.get('/getUnverifiedNews', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        News.find({verify: false}, function (err, news) {
+            if (err) {
+                console.log(err);
+            }else{
+                data.success = "1";
+                news = sortJson(news, 'date', 'des');
+                data.data = news;
+            }
+            res.send(data);
         });
     }catch(err){
         data.data = "Error in /getNews: " + err;
