@@ -52,7 +52,7 @@ router.post('/registerSuccess',function (req, res) {
 
 //Admin login post request handler
 router.post('/adminLogin',function (req, res) {
-    let data = {success:0,data:"",};
+    let data = {success:0,data:"",access:0};
     try{
         let email = req.body.email;
         let password = req.body.password;
@@ -61,6 +61,7 @@ router.post('/adminLogin',function (req, res) {
                 data.data = err;
             }else{
                 data.success="1";
+                data.access = admin.access;
                 data.data = admin._id;
             }
             res.send(data);
@@ -199,94 +200,6 @@ router.get('/getCategoriesWithNews', function (req, res) {
     }
 });
 
-//Adding poll post request
-/*
-router.post('/addPoll', function (req, res) {
-    let user_id = req.body.user_id;
-    let user_access = 0;
-    Admin.findOne({_id:user_id},function (err, adminUser) {
-        if(err){
-            console.log("Error while finding user: " +err);
-        }else{
-            user_access = adminUser.access;
-            let poll = Poll();
-            if(user_access){
-                poll.verify = true;
-            }else {
-                poll.verify = false;
-            }
-            poll.title = req.body.title;
-            poll.description = req.body.description;
-            poll.url = req.body.url;
-            poll.imageURL = req.body.imageURL;
-            poll.question = req.body.question;
-            poll.optionOne = req.body.optionOne;
-            poll.optionTwo = req.body.optionTwo;
-            poll.optionOneCount = 0;
-            poll.optionTwoCount = 0;
-            poll.date = new Date().getTime() / 1000;
-            poll.type = "Poll";
-            poll.shareUrl = poll.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
-            poll.shareUrl += "_";
-            let date = poll.date.split('.');
-            poll.shareUrl += date[0];
-            poll.save(function (err, savedPoll) {
-                if (err) {
-                    try {
-                        console.log(err);
-                        res.send("Already added poll");
-                    } catch (err) {
-                        res.send(err);
-                    }
-                }else{
-                    console.log(savedPoll);
-                    res.send("Save success");
-                }
-            });
-        }
-    });
-
-
-});
-*/
-
-//Update Poll post request
-/*
-router.post('/updatePoll', function (req, res) {
-    let user_id = req.body.user_id;
-    let user_access = 0;
-    Admin.findOne({_id:user_id},function (err, adminUser) {
-        if(err){
-            console.log("Error while finding user: " +err);
-        }else{
-            user_access = adminUser.access;
-            let set;
-            if(user_access){
-                set = {title: req.body.title,description: req.body.description,url: req.body.url,imageURL: req.body.imageURL,question: req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo,verify:true};
-            }else {
-                set = {title: req.body.title,description: req.body.description,url: req.body.url,imageURL: req.body.imageURL,question: req.body.question,optionOne:req.body.optionOne,optionTwo:req.body.optionTwo,verify:false};
-            }
-
-            Poll.findOneAndUpdate({_id:req.body._id},{
-                $set: set
-            },{returnOriginal: false},function (err, savedPoll) {
-                if (err) {
-                    try {
-                        console.log(err);
-                        res.send("Poll not found");
-                    } catch (err) {
-                        res.send(err);
-                    }
-                }else{
-                    console.log(savedPoll);
-                    res.send("Update success");
-                }
-            });
-        }
-    });
-
-});
-*/
 
 //Get all polls
 router.get('/getPolls',function (req, res) {
@@ -310,49 +223,7 @@ router.get('/getPolls',function (req, res) {
     }
 });
 
-//Delete polls post request
-/*
-router.post('/deletePoll', function (req, res) {
-    let user_id = req.body.user_id;
-    let user_access = 0;
-    Admin.findOne({_id:user_id},function (err, adminUser) {
-        if(err){
-            console.log("Error while finding user: " +err);
-        }else{
-            user_access = adminUser.access;
-            let verified = false;
-            Poll.findOne({_id: req.body._id},function (err,poll) {
-                if(err){
-                    console.log("Finding poll error: " + err);
-                }else {
-                    verified = poll.verify;
-                }
-            });
 
-            let data={success:"0",data:""};
-            if(verified || user_access){
-                Poll.deleteOne({_id: req.body._id}, function (err, result) {
-                    if (err) {
-                        console.log("Error");
-                        res.send(data);
-                    }else{
-                        data.success = "1";
-                        data.data = "Poll deleted successfully";
-                        res.send(data);
-                    }
-
-                });
-            }else{
-                data.data = "You don't have privilege for this action";
-                res.send(data);
-            }
-        }
-    });
-
-
-});
-
-*/
 //Increase poll counter
 router.post('/pollCount',function (req, res) {
     let data = {success: "0", data: "", optionOneCount:0 , optionTwoCount:0};
@@ -638,22 +509,9 @@ router.post('/updateNews', function (req, res) {
                                             if (cat == "") {
                                                 console.log("Empty Category. Not adding");
                                             } else {
-                                                let newCat = Cat();
                                                 if (cat.charAt(cat.length) == ',') {
                                                     cat = cat.substr(0, cat.length - 2);
                                                 }
-                                                /*newCat.category = cat;
-
-                                                newCat.save(function (err, savedCat) {
-                                                    if (err) {
-                                                        try {
-                                                            console.log("Error adding category: " + err);
-                                                        } catch (er) {
-                                                            console.log(er);
-                                                        }
-                                                        console.log(savedCat);
-                                                    }
-                                                });*/
                                             }
                                         }
                                     }
