@@ -218,7 +218,7 @@ router.get('/getAdvertisements',function (req, res) {
             if (err) {
                 data.data = err;
             } else {
-                if(!advertisement){
+                if(advertisement){
                     data.success = "1";
                     advertisement = sortJson(advertisement, 'date', 'des');
                     data.data = advertisement;
@@ -243,7 +243,7 @@ router.get('/getUnverifiedAdvertisements',function (req, res) {
             if (err) {
                 data.data = err;
             } else {
-                if(!advertisement){
+                if(advertisement){
                     data.success = "1";
                     advertisement = sortJson(advertisement, 'date', 'des');
                     data.data = advertisement;
@@ -267,7 +267,7 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
         let user_id = req.params.user_id;
         Admin.findOne({_id: user_id}, function (err, adminUser) {
             if (err) {
-                console.log("Error in getAllNews while finding user: " + err);
+                console.log("Error in getAllAdvertisements/:user_id while finding user: " + err);
             } else {
                 if (adminUser.access == 1) {
 
@@ -276,7 +276,7 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
                             console.log(err);
                             res.send(data);
                         }else{
-                            if(!advertisement){
+                            if(advertisement){
                                 data.success = "1";
                                 advertisement = sortJson(advertisement, 'date', 'des');
                                 data.data = advertisement;
@@ -291,7 +291,7 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
                             console.log(err);
                             res.send(data);
                         }else {
-                            if (!advertisement) {
+                            if (advertisement) {
                                 data.success = "1";
                                 advertisement = sortJson(advertisement, 'date', 'des');
                                 data.data = advertisement;
@@ -454,6 +454,7 @@ router.post('/postNews', function (req, res) {
                 } else {
                     newNews.verify = false;
                 }
+                if(req.body.category)
                 newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
                 newNews.type = req.body.type;
                 // If Advertisement
