@@ -1036,14 +1036,14 @@ router.post('/searchUnverifiedAdvertisementByTitle', function (req, res) {
                     date: 0,
                     count: 0,
                     category: 0
-                }, function (err, newsArray) {
+                }, function (err, advertisementArray) {
                     if (err) {
                         console.info(err);
                         res.send(data)
                     } else {
-                        if(!newsArray){
+                        if(advertisementArray){
                             data.success = "1";
-                            data.data = newsArray;
+                            data.data = advertisementArray;
                         }else{
                             data.data = "Error searching news via title";
                         }
