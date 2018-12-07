@@ -60,7 +60,7 @@ router.post('/adminLogin',function (req, res) {
             if(err){
                 data.data = err;
             }else{
-                if(admin){
+                if(admin != null){
                     data.success="1";
                     data.access = admin.access;
                     data.data = admin._id;
