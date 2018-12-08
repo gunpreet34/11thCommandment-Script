@@ -1101,9 +1101,12 @@ router.post('/getNewsById',function (req,res) {
             if (err) {
                 res.send(data);
             } else {
-                console.log(news);
-                data.data = news;
-                data.success = 1;
+                if(news){
+                    data.data = news;
+                    data.success = 1;
+                }else{
+                    data.data = "No news found by this id";
+                }
                 res.send(data);
             }
         });
