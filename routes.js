@@ -1121,7 +1121,6 @@ router.post('/getNewsById',function (req,res) {
 //Get news by title
 router.post('/getNewsByTitle',function (req,res) {
     let data = {success: "0", data: ''};
-     console.log(req.body.title);
     try {
         News.findOne({title: req.body.title}, {titleSearch: 0, date: 0, count: 0}, function (err, news) {
            if (err) {
