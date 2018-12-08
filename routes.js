@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 let sortJson = require('sort-json-array');
 let fs = require('fs');
+let admin = require('firebase-admin');
 
 let User = require('./models/user');
 let News = require('./models/news');
@@ -10,7 +11,33 @@ let Cat = require('./models/category');
 //let Poll = require('./models/poll');
 let SavedPoll = require('./models/savedPoll');
 let Admin = require('./models/admin');
+let serviceAccount=require("./private/commandment-1542387209123-firebase-adminsdk-oazeh-e68716fd65.json");
 
+//Initialize app for firebase use
+admin.initializeApp({
+    credential:admin.credential.cert(serviceAccount),
+    databaseURL:"https://noti.firebaseio.com"
+});
+
+//Method to push notification to firebase
+let pushNotification = function (title,message,imageURL) {
+    let topic = 'global';
+    let payload={
+        data:{
+            title:title,
+            message:message,
+            image:imageURL,
+            timestamp:""+   (new Date()).getTime()
+        },
+        topic:topic
+    };
+
+    admin.messaging().send(payload).then(function (response) {
+        console.log("Successfully sent : "+response);
+    }).catch(function (error) {
+        console.log("Error: "+error);
+    });
+};
 
 //Admin registration page renderer
 router.get('/registerAdmin', function(req, res){
@@ -515,15 +542,16 @@ router.post('/postNews', function (req, res) {
                 newNews.save(function (err, savedNews) {
                     if (err) {
                         try {
-                            res.send("News with same title already exists");
                             console.log(err);
-                            return;
+                            res.send("News with same title already exists");
                         } catch (err) {
                             console.log(err);
                         }
+                    }else{
+                        //push notification
+                        pushNotification(savedNews.title,savedNews.description,savedNews.imageURL);
+                        res.send("Save success");
                     }
-                    console.log(savedNews);
-                    res.send("Save success");
                 });
             }
         });
