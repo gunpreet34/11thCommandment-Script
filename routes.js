@@ -347,7 +347,7 @@ router.get('/getPolls',function (req, res) {
             if (err) {
                 data.data = err;
             } else {
-                if(!poll){
+                if(poll){
                     data.success = "1";
                     poll = sortJson(poll, 'date', 'des');
                     data.data = poll;
