@@ -1099,6 +1099,7 @@ router.post('/getNewsById',function (req,res) {
     try {
         News.findOne({_id: req.body.news_id}, {titleSearch: 0, count: 0}, function (err, news) {
             if (err) {
+                data.data = "Please fill news_id";
                 res.send(data);
             } else {
                 if(news){
