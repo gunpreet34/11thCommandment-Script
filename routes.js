@@ -942,7 +942,7 @@ router.post('/searchNewsByTitle', function (req, res) {
                         console.info(err);
                         res.send(data)
                     } else {
-                        if(!newsArray){
+                        if(newsArray){
                             data.success = "1";
                             data.data = newsArray;
                         }else{
@@ -986,7 +986,7 @@ router.post('/searchUnverifiedNewsByTitle', function (req, res) {
                         console.info(err);
                         res.send(data)
                     } else {
-                        if(!newsArray){
+                        if(newsArray){
                             data.success = "1";
                             data.data = newsArray;
                         }else{
@@ -1153,7 +1153,7 @@ router.post('/getAdvertisementByTitle',function (req,res) {
             if (err) {
                 res.send(data);
             } else {
-                if(!advertisement){
+                if(advertisement){
                     data.data = advertisement;
                     data.success = 1;
                 }else {
