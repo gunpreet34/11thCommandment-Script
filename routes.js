@@ -673,6 +673,9 @@ router.post('/updateNews', function (req, res) {
                                     }
                                 });
                             });
+                            if(user_access){
+                                pushNotification(news.title,news.description,news.imageURL,news._id);
+                            }
                             res.send("Successfully updated");
                         }
                     }
