@@ -20,14 +20,15 @@ admin.initializeApp({
 });
 
 //Method to push notification to firebase
-let pushNotification = function (title,message,imageURL) {
+let pushNotification = function (title,message,imageURL,id) {
     let topic = 'global';
     let payload={
         data:{
             title:title,
             message:message,
             image:imageURL,
-            timestamp:""+   (new Date()).getTime()
+            timestamp:""+   (new Date()).getTime(),
+            news_id:id
         },
         topic:topic
     };
@@ -171,11 +172,12 @@ router.post('/addCategory', function (req, res) {
     try {
         let cat = Cat();
         cat.category = req.body.category;
-        //let image = req.body.image;
+        let image = req.body.image;
         /*let data = image.replace(/^data:image\/\w+;base64,/, "");
         let buffer = new Buffer(data, 'base64');
         fs.writeFile(cat.category, buffer);
-        */cat.save({category: req.body.category}, function (err, result) {
+        */
+        cat.save({category: req.body.category}, function (err, result) {
             if (err) {
                 res.send(err);
             } else {
@@ -549,7 +551,9 @@ router.post('/postNews', function (req, res) {
                         }
                     }else{
                         //push notification
-                        pushNotification(savedNews.title,savedNews.description,savedNews.imageURL);
+                        if (user_access) {
+                            pushNotification(savedNews.title, savedNews.description, savedNews.imageURL, savedNews._id);
+                        }
                         res.send("Save success");
                     }
                 });
@@ -1090,10 +1094,10 @@ router.post('/searchUnverifiedAdvertisementByTitle', function (req, res) {
 
 
 //Get news by id
-router.post('/getNewsById/:id',function (req,res) {
+router.post('/getNewsById',function (req,res) {
     let data = {success: "0", data: ''};
     try {
-        News.findOne({_id: req.params.id}, {titleSearch: 0, count: 0}, function (err, news) {
+        News.findOne({_id: req.body.news_id}, {titleSearch: 0, count: 0}, function (err, news) {
             if (err) {
                 res.send(data);
             } else {
@@ -1104,7 +1108,7 @@ router.post('/getNewsById/:id',function (req,res) {
             }
         });
     }catch(err){
-        data.data = "Error in /getNewsById/:id : " + err;
+        data.data = "Error in /getNewsById : " + err;
         console.log(data.data);
         res.send(data)
     }
