@@ -28,7 +28,7 @@ let pushNotification = function (title,message,imageURL,id) {
             message:message,
             image:imageURL,
             timestamp:""+   (new Date()).getTime(),
-            news_id:id
+            news_id: id.toString()
         },
         topic:topic
     };
