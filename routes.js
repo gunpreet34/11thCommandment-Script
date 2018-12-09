@@ -863,7 +863,7 @@ router.get('/getAllNews/:user_id', function (req, res) {
 
 
 //Get news by category
-router.get('/getNewsByCategory/:category', function (req, res) {
+router.post('/getNewsByCategory', function (req, res) {
     let data = {success: "0", data: ''};
     try {
         let callback = (err, newsArray) => {
@@ -879,7 +879,7 @@ router.get('/getNewsByCategory/:category', function (req, res) {
             }
         };
         console.info(req.body.category);
-        News.find({tags: req.params.category.toLowerCase(), verify: true}, {category: 0}, callback);
+        News.find({tags: req.body.category.toLowerCase(), verify: true}, {category: 0}, callback);
     }catch(err){
         data.data = "Error in /getNewsByCategory/:category: " + err;
         console.log(data.data);
