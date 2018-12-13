@@ -881,7 +881,7 @@ router.post('/getNewsByCategory', function (req, res) {
         console.info(req.body.category);
         News.find({tags: req.body.category.toLowerCase(), verify: true}, {category: 0}, callback);
     }catch(err){
-        data.data = "Error in /getNewsByCategory/:category: " + err;
+        data.data = "Error in /getNewsByCategory " + err;
         console.log(data.data);
         res.send(data)
     }
@@ -913,11 +913,11 @@ router.get('/news/:url', function (req, res) {
 });
 
 //Search news using title
-router.post('/searchNewsByTitle', function (req, res) {
+router.post('/searchVerifiedNewsByTitle', function (req, res) {
     let data = {success: "0", data: ''};
     try {
         let user_id = req.body.user_id;
-        Admin.findOne({_id: user_id}, function (err, adminUser) {
+        Admin.findOne({_id: user_id,verify:true}, function (err, adminUser) {
             if (err) {
                 console.log("Error in searchNewsByTitle while finding user: " + err);
             } else {
