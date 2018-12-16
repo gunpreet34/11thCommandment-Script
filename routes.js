@@ -244,10 +244,10 @@ router.post('/updateCategory', function (req, res) {
 });
 
 //Delete a category
-router.get('/deleteCategory/:id', function (req, res) {
+router.post('/deleteCategory', function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        Cat.deleteOne({_id:req.params._id}, function (err, cat) {
+        Cat.deleteOne({_id:req.body._id}, function (err, cat) {
             if (err) {
                 console.log(err);
                 data.data = err;
@@ -852,6 +852,7 @@ router.post('/deleteNews', function (req, res) {
                 News.findOne({_id: req.body._id}, function (err, news) {
                     if (err) {
                         console.log("Finding news error: " + err);
+                        data.data = "Finding news error: " + err;
                     } else {
                         if(news){
                             verified = news.verify;
@@ -860,14 +861,15 @@ router.post('/deleteNews', function (req, res) {
                                 News.findOne({_id: req.body._id}, function (err, news) {
                                     if (err) {
                                         console.log(err);
+                                        data.data = err;
                                     } else {
                                         //console.log("News = " + news);
                                         tags = news.category.split(', ');
                                         console.log("News tag: " + news.tags);
                                         News.deleteOne({_id: req.body._id}, function (err, results) {
                                             if (err) {
-                                                console.log("Error");
-                                                res.send(data);
+                                                console.log("Error: " + err);
+                                                data.data = err;
                                             } else {
                                                 if (tags != "") {
                                                     tags.forEach((category) => {
@@ -879,23 +881,19 @@ router.post('/deleteNews', function (req, res) {
                                                             if (err) {
                                                                 console.log("Error deleting category");
                                                                 data.data = err;
-                                                                res.send(data);
                                                             } else {
                                                                 data.success = "1";
                                                                 data.data = "Deleted news and category";
                                                                 if(updatedCat.count < 0){
                                                                     console.log("Working fine till here");
                                                                     Cat.findOneAndDelete({category: category});
-                                                                    res.send(data);
                                                                 }else{
-                                                                    res.send(data);
                                                                 }
                                                             }
                                                         });
                                                     });
                                                 } else {
                                                     console.log("Error deleting news");
-                                                    res.send(data);
                                                 }
 
                                             }
@@ -904,15 +902,14 @@ router.post('/deleteNews', function (req, res) {
                                 });
                             } else {
                                 data.data = "You don't have privilege for this action";
-                                res.send(data);
                             }
                         }else {
                             data.data = "No news found";
-                            res.send(data);
                         }
                     }
                 });
             }
+            res.send(data);
         });
     }catch(err){
         data.data = "Error in /deleteNews: " + err;
