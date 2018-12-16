@@ -189,7 +189,154 @@ router.post('/addCategory', function (req, res) {
         console.log(data);
         res.send(data)
     }
+});
 
+//Update a category
+router.post('/updateCategory', function (req, res) {
+    try {
+        let user_id = req.body.user_id;
+        let user_access = 0;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
+            if (err) {
+                console.log("Error while finding user: " + err);
+            } else {
+                user_access = adminUser.access;
+                let set;
+                if (user_access) {
+                    set = {
+                        category: req.body.category,
+                        imageURL:req.body.imageURL,
+                        verify: true
+                    };
+                } else {
+                    set = {
+                        category: req.body.category,
+                        imageURL:req.body.imageURL,
+                        verify: false
+                    };
+                }
+                Cat.findOneAndUpdate({_id: req.body._id}, {
+                    $set: set
+                }, {returnOriginal: false}, function (err, cat) {
+                    if (err) {
+                        try {
+                            res.send("Error updating: " + err);
+                        } catch (er) {
+                            console.log(er);
+                        }
+                    } else {
+                        if (!cat) {
+                            res.send("Not found");
+                        } else {
+                            if (user_access) {
+                                res.send("Successfully updated");
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }catch(err){
+        let data = "Error in /updateCategory: " + err;
+        console.log(data);
+        res.send(data)
+    }
+});
+
+//Delete a category
+router.get('/deleteCategory/:id', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        Cat.deleteOne({_id:req.params._id}, function (err, cat) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!cat){
+                    data.data = "Error deleting category";
+                }else{
+                    data.success = "1";
+                    data.data = cat;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /deleteCategory/:_id " + err;
+        res.send(data)
+    }
+});
+
+//Get unverified categories
+router.get('/getUnverifiedCategories', function (req, res) {
+    let data = {success: "0", data: '',verify:false};
+    try {
+        Cat.find({}, function (err, cats) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!cats){
+                    data.data = "Error retrieving categories";
+                }else{
+                    data.success = "1";
+                    data.data = cats;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getUnverifiedCategories: " + err;
+        res.send(data)
+    }
+});
+
+//Get verified categories
+router.get('/getVerifiedCategories', function (req, res) {
+    let data = {success: "0", data: '',verify:true};
+    try {
+        Cat.find({}, function (err, cats) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!cats){
+                    data.data = "Error retrieving categories";
+                }else{
+                    data.success = "1";
+                    data.data = cats;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getVerifiedCategories: " + err;
+        res.send(data)
+    }
+});
+
+//Get category
+router.get('/getCategory/:id', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        Cat.find({_id:req.params._id}, function (err, cat) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!cat){
+                    data.data = "Error retrieving category";
+                }else{
+                    data.success = "1";
+                    data.data = cat;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getCategory/:_id " + err;
+        res.send(data)
+    }
 });
 
 //Get Categories

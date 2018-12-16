@@ -8,6 +8,8 @@ let catSchema = new mongoose.Schema({
         default:0
     },imageURL:{
         type:String
+    },verify:{
+        type:Boolean
     }
 });
 
