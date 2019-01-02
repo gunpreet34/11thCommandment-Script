@@ -39,87 +39,83 @@ response:Json - {success:String,data:Msg to be shown}
 
 ### For news
 
-/postNews -> post request
-send - title(unique),description,url,category(seperated by ','),tagPrimary,tagSecondary,imageURL,source
+>'post' /postNews 
+```sh 
+send - title,description,url,category(separated by ','),count,tagPrimary,tagSecondary,imageURL,source,type(poll or news),question,optionOne,optionTwo
 extras - tags(for category splitting),titleSearch(for title splitting into words)
 response - string
+```
 
-/deleteNews -> post request
+>'post' /deleteNews 
+```sh 
 send - id
 response - string
+```
 
-/getNews -> get request - get all news
+>'get' /getNews 
+```sh 
 response - json - {success,data} - where success is integer and data is json
+```
 
-/getNewsByCategory -> post request
+>'post' /getNewsByCategory
+```sh 
 send - category
 response - json - {success,data} - where success is integer and data is in json - returns news within a category
+```
 
-/searchNewsByTitle -> post request
+>'post' /searchNewsByTitle 
+```sh 
 send - title
 response - json - {success,data} - where success is integer and data is in json - returns news within a category - returns news except the parameters: tags,titleSearch,url,tagPrimary,,tagSecondary,source,date,count,category
+```
 
-/getNewsByTitle -> get request
+>'get' /getNewsByTitle 
+```sh 
 response - json - {success,data} - where success is integer and data is in json - returns news by title - returns news except the parameters: tags,titleSearch,date,count
+```
 
-For updating news
 
-/updateNews -> post request
-find news via - id
-send - title,description,url,category(separated by ','),tagPrimary,tagSecondary,imageURL,source
+>'post' /updateNews 
+```sh 
+find admin via -> user_id
+find news via -> _id
+send - title,description,url,category(separated by ','),count,tagPrimary,tagSecondary,imageURL,source,type(poll or news),question,optionOne,optionTwo
 extras - tags(for category splitting),titleSearch(for title splitting into words)
 response - string
+```
 
-/updateNewsByTitle ->post request
-send - _id,title
-response - string
+### For bookmarking news
 
-/updateNewsByDescription ->post request
-send - _id,description
-response - string
-
-/updateNewsByUrl ->post request
-send - _id,url
-response - string
-
-/updateNewsByCategory ->post request
-send - _id,category
-response - string
-
-/updateNewsByTagPrimary ->post request
-send - _id,tagPrimary
-response - string
-
-/updateNewsByTagSecondary ->post request
-send - _id,tagSecondary
-response - string
-
-/updateNewsByImageUrl ->post request
-send - _id,imageURL
-response - string
-
-/updateNewsBySource ->post request
-send - _id,source
-response - string
-
-/updateNewsByCounter ->post request
-send - _id,count
-response - string
-
-
-For bookmarking news
-
-/bookmark
+>'post' /bookmark
+```sh 
 send - username,news_id
 response - string
+```
 
-/getBookmarkedNews
+>'post' /getBookmarkedNews
+```sh 
 send - username
 response - json - {success,data} - where success is integer and data is in json - returns news by id
+```
 
-For getting categories
-/getCategories
+### For categories
+
+>'post' /addCategory
+```sh
+send - category(name),image(base64 encoded image)
+response - String (Either -> Category added OR -> Error) 
+```
+
+>'post' /updateCategory
+```sh 
+send - 
+response - 
+```
+
+>'get' /getCategories
+```sh 
 response - json - {success,data} - where success is integer and data is json
+``` 
 
 For getting polls
 /getPolls - Post request
