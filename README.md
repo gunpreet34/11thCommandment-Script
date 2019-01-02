@@ -3,6 +3,20 @@
 ## Various routes:
 
 ### For user 
+
+#### Schema
+```sh
+username-string
+access-number
+fb_id-string
+fb_number-Number
+gmail_id-string
+gmail_number-Number
+mobile-string
+name-string
+bookmarkedNews-Array
+```
+
 >'post' /register
 ```sh 
 username:String(unique,required)
@@ -18,6 +32,17 @@ response:String("Found","Not Found")
 ```
 
 ### For admin registration
+
+#### Schema
+
+```sh
+name-string
+password-string
+access-number
+mobile-number
+email-string
+```
+
 >'get' /registerAdmin -> To load the webpage for registration
 
 >'post' /registerSuccess
@@ -38,6 +63,30 @@ response:Json - {success:String,data:Msg to be shown}
 ```
 
 ### For news
+
+#### Schema
+
+```sh
+title-string
+titleSearch-[String]
+description-string
+url-string
+category-string
+tags-[string] -> splitted categories array
+imageURL-string
+source-string
+count-number
+date-string
+verify-boolean
+uniqueUrl-string
+type-string
+//For poll
+question
+optionOne
+optionTwo
+optionOneCount
+optionTwoCount
+```
 
 >'post' /postNews 
 ```sh 
@@ -104,6 +153,13 @@ get request to above url will return the news in Json format
 
 ### For bookmarking news
 
+#### BookmarkedNews Schema
+```sh
+username-string
+news_id-string
+news-object
+```
+
 >'post' /bookmark
 ```sh 
 send - username,news_id
@@ -123,6 +179,15 @@ response - json - {success,data} - success in string("0" or "1") and data is Str
 ```
 
 ### For categories
+
+#### Schema
+
+```sh
+category-string
+count-number
+imageURL-string
+verify-boolean
+```
 
 >'post' /addCategory
 ```sh
@@ -169,6 +234,13 @@ response - json - ({successParameter,jsonArrayOfAllCategoriesWithNews})
 
 ### For polls
 
+#### SavedPoll Schema
+```sh
+username-string
+poll_id-string
+option-number
+```
+
 >'post' /getPolls 
 ```sh
 response - json - {success,data} - success in string("0" or "1") and data is JsonArray of all the Polls
@@ -189,6 +261,22 @@ response : Json - {success:String,data:votedPolls}
 ```
 
 ### For Advertisement
+
+#### Schema
+
+```sh
+type-string
+advertisementListCount-number
+title-string
+titleSearch-[string]
+description-string
+advertisementUrl-string
+URL-string
+source-string
+verify-boolean
+shown-boolean
+uniqueUrl-string
+```
 
 >'post' /addAdvertisement
 ```sh

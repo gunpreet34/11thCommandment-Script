@@ -309,29 +309,6 @@ router.get('/getUnverifiedCategories', function (req, res) {
     }
 });
 
-//Get verified categories
-router.get('/getVerifiedCategories', function (req, res) {
-    let data = {success: "0", data: '',verify:true};
-    try {
-        Cat.find({}, function (err, cats) {
-            if (err) {
-                console.log(err);
-                data.data = err;
-            }else{
-                if(!cats){
-                    data.data = "Error retrieving categories";
-                }else{
-                    data.success = "1";
-                    data.data = cats;
-                }
-            }
-            res.send(data);
-        });
-    }catch(err){
-        data.data = "Error in /getVerifiedCategories: " + err;
-        res.send(data)
-    }
-});
 
 //Get category
 router.get('/getCategory/:id', function (req, res) {
