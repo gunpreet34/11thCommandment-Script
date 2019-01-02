@@ -28,7 +28,7 @@ let userSchema = new mongoose.Schema({
     bookmarkedNews:{
         type:Array
     }
-});
+}, { strict: false });
 
 let User = mongoose.model('User',userSchema);
 module.exports = User;

@@ -4,13 +4,15 @@ let sortJson = require('sort-json-array');
 let fs = require('fs');
 let admin = require('firebase-admin');
 
+//Importing models
 let User = require('./models/user');
 let News = require('./models/news');
 let BookmarkedNews = require('./models/bookmarkedNews');
 let Cat = require('./models/category');
-//let Poll = require('./models/poll');
 let SavedPoll = require('./models/savedPoll');
 let Admin = require('./models/admin');
+let Advertisement = require('./models/advertisement');
+
 let serviceAccount=require("./private/commandment-1542387209123-firebase-adminsdk-oazeh-e68716fd65.json");
 
 //Initialize app for firebase use
@@ -200,7 +202,8 @@ router.post('/updateCategory', function (req, res) {
             if (err) {
                 console.log("Error while finding user: " + err);
             } else {
-                user_access = adminUser.access;
+                if(adminUser)
+                    user_access = adminUser.access;
                 let set;
                 if (user_access) {
                     set = {
@@ -386,17 +389,161 @@ router.get('/getCategoriesWithNews', function (req, res) {
     }
 });
 
+//FOR ADVERTISEMENTS
+
+//Add new advertisement
+router.post('/addAdvertisement',function (req, res) {
+    try {
+        let user_id = req.body.user_id;
+        let user_access = 0;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
+            if (err) {
+                console.log("Error while finding user: " + err);
+            } else {
+                if(adminUser)
+                    user_access = adminUser.access;
+                let newAdvertisement = Advertisement();
+                newAdvertisement.title = req.body.title;
+                newAdvertisement.titleSearch = req.body.title.split(' ').map(k => k.toLowerCase());
+                newAdvertisement.URL = req.body.URL;
+                newAdvertisement.source = req.body.source;
+                newAdvertisement.type = req.body.type;
+                newAdvertisement.advertisementListCount = req.body.advertisementListCount;
+                newAdvertisement.advertisementUrl = req.body.advertisementUrl;
+                newAdvertisement.date = new Date().getTime() / 1000 + '';
+                //Url to be shared
+                newAdvertisement.uniqueUrl = newAdvertisement.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
+                let date = newAdvertisement.date.split('.');
+                newAdvertisement.uniqueUrl += date[0];
+                newAdvertisement.description = req.body.description;
+                if (user_access) {
+                    newAdvertisement.verify = true;
+                } else {
+                    newAdvertisement.verify = false;
+                }
+                newAdvertisement.save(function (err, savedAdvertisement) {
+                    if (err) {
+                        try {
+                            console.log(err);
+                            res.send("Advertisement with same title already exists");
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }else{
+                        console.log(savedAdvertisement);
+                        res.send("Save success");
+                    }
+                });
+            }
+
+        });
+    }catch (err){
+        let data = "Error in /addAdvertisement: " + err;
+        console.log(data);
+        res.send(data);
+    }
+
+});
+
+//Update advertisement
+router.post('/updateAdvertisement',function (req, res) {
+    try {
+        let user_id = req.body.user_id;
+        let user_access = 0;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
+            if (err) {
+                console.log("Error while finding user: " + err);
+            } else {
+                if(adminUser)
+                    user_access = adminUser.access;
+                let set;
+                if (user_access) {
+                    console.log("Admin is updating");
+                    set = {
+                        title: req.body.title,
+                        titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),
+                        advertisementListCount: req.body.advertisementListCount,
+                        description : req.body.description,
+                        URL : req.body.URL,
+                        type : req.body.type,
+                        advertisementUrl : req.body.advertisementUrl,
+                        shown : req.body.shown,
+                        verify: true
+                    };
+                } else {
+                    set = {
+                        title: req.body.title,
+                        titleSearch: req.body.title.split(' ').map(k => k.toLowerCase()),
+                        advertisementListCount: req.body.advertisementListCount,
+                        description : req.body.description,
+                        URL : req.body.URL,
+                        type : req.body.type,
+                        advertisementUrl : req.body.advertisementUrl,
+                        shown : req.body.shown,
+                        verify: false
+                    };
+                }
+
+                Advertisement.findOneAndUpdate({_id: req.body._id}, {
+                    $set: set
+                }, {returnOriginal: true}, function (err, advertisement) {
+                    if (err) {
+                        try {
+                            res.send("Error updating: " + err);
+                        } catch (er) {
+                            console.log(er);
+                        }
+                    }else{
+                        console.log(advertisement);
+                        res.send("Successfully updated");
+                    }
+                });
+            }
+        });
+    }catch (err){
+        let data = "Error in /updateAdvertisement: " + err;
+        console.log(data);
+        res.send(data);
+    }
+});
+
+//Delete advertisement
+//Delete a category
+router.post('/deleteAdvertisement', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        Advertisement.deleteOne({_id:req.body._id}, function (err, deletedAdvertisment) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!deletedAdvertisment){
+                    data.data = "Error deleting advertisement";
+                }else{
+                    data.success = "1";
+                    data.data = "Successfully deleted " + deletedAdvertisment.title;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /deleteCategory/:_id " + err;
+        res.send(data)
+    }
+});
+
+
 //Get all advertisements - verified only - for users
 router.get('/getAdvertisements',function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        News.find({type: "Advertisement", verify: true}, function (err, advertisement) {
+        Advertisement.find({verify: true}, function (err, advertisement) {
             if (err) {
-                data.data = err;
+                data.data = "Network error";
             } else {
                 if(advertisement){
                     data.success = "1";
-                    advertisement = sortJson(advertisement, 'date', 'des');
+                    advertisement = sortJson(advertisement, 'advertisementListCount', 'asc');
                     data.data = advertisement;
                 }else {
                     data.data = "Error in finding advertisements";
@@ -407,7 +554,7 @@ router.get('/getAdvertisements',function (req, res) {
     }catch(err){
         data.data = "Error in /getAdvertisements: " + err;
         console.log(data.data);
-        res.send(data)
+        res.send(data);
     }
 });
 
@@ -415,13 +562,13 @@ router.get('/getAdvertisements',function (req, res) {
 router.get('/getUnverifiedAdvertisements',function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        News.find({type: "Advertisement", verify: false}, function (err, advertisement) {
+        Advertisement.find({verify: false}, function (err, advertisement) {
             if (err) {
                 data.data = err;
             } else {
                 if(advertisement){
                     data.success = "1";
-                    advertisement = sortJson(advertisement, 'date', 'des');
+                    advertisement = sortJson(advertisement, 'advertisementListCount', 'asc');
                     data.data = advertisement;
                 }else {
                     data.data = "Error in finding advertisements";
@@ -432,7 +579,7 @@ router.get('/getUnverifiedAdvertisements',function (req, res) {
     }catch(err){
         data.data = "Error in /getUnverifiedAdvertisements: " + err;
         console.log(data.data);
-        res.send(data)
+        res.send(data);
     }
 });
 
@@ -445,31 +592,33 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
             if (err) {
                 console.log("Error in getAllAdvertisements/:user_id while finding user: " + err);
             } else {
-                if (adminUser.access == 1) {
-
-                    News.find({}, function (err, advertisement) {
+                if(adminUser)
+                    if (adminUser.access == 1) {
+                    Advertisement.find({verify:true}, function (err, advertisement) {
                         if (err) {
                             console.log(err);
+                            data.data = "Network error";
                             res.send(data);
                         }else{
                             if(advertisement){
                                 data.success = "1";
-                                advertisement = sortJson(advertisement, 'date', 'des');
+                                advertisement = sortJson(advertisement, 'advertisementListCount', 'asc');
                                 data.data = advertisement;
                             }
                             res.send(data);
                         }
                     });
                 } else {
-                    News.find({verify: false}, function (err, advertisement) {
+                    Advertisement.find({verify: false}, function (err, advertisement) {
                         let data = {success: "0", data: ''};
                         if (err) {
                             console.log(err);
+                            data.data = "Network error";
                             res.send(data);
                         }else {
                             if (advertisement) {
                                 data.success = "1";
-                                advertisement = sortJson(advertisement, 'date', 'des');
+                                advertisement = sortJson(advertisement, 'advertisementListCount', 'asc');
                                 data.data = advertisement;
                             }
                             res.send(data);
@@ -481,7 +630,7 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
     }catch(err){
         data.data = "Error in /getAllAdvertisements/:user_id: " + err;
         console.log(data.data);
-        res.send(data)
+        res.send(data);
     }
 
 });
@@ -606,6 +755,7 @@ router.post("/getPoll",function (req, res) {
     }
 });
 
+
 //Post-news/poll
 router.post('/postNews', function (req, res) {
     try {
@@ -615,7 +765,8 @@ router.post('/postNews', function (req, res) {
             if (err) {
                 console.log("Error while finding user: " + err);
             } else {
-                user_access = adminUser.access;
+                if(adminUser)
+                    user_access = adminUser.access;
                 let newNews = News();
                 newNews.title = req.body.title;
                 newNews.titleSearch = req.body.title.split(' ').map(k => k.toLowerCase());
@@ -633,9 +784,6 @@ router.post('/postNews', function (req, res) {
                 if(req.body.category)
                 newNews.tags = req.body.category.split(', ').map(k => k.toLowerCase());
                 newNews.type = req.body.type;
-                // If Advertisement
-                newNews.subType = req.body.subType;
-                newNews.advertisementListCount = req.body.advertisementListCount;
                 //If Poll
                 newNews.question = req.body.question;
                 newNews.optionOne = req.body.optionOne;
@@ -722,7 +870,8 @@ router.post('/updateNews', function (req, res) {
             if (err) {
                 console.log("Error while finding user: " + err);
             } else {
-                user_access = adminUser.access;
+                if(adminUser)
+                    user_access = adminUser.access;
                 let set;
                 if (user_access) {
                     set = {
@@ -847,7 +996,8 @@ router.post('/deleteNews', function (req, res) {
             if (err) {
                 console.log("Error while finding user: " + err);
             } else {
-                user_access = adminUser.access;
+                if(adminUser)
+                    user_access = adminUser.access;
                 let verified = false;
                 News.findOne({_id: req.body._id}, function (err, news) {
                     if (err) {
@@ -969,7 +1119,8 @@ router.get('/getAllNews/:user_id', function (req, res) {
             if (err) {
                 console.log("Error in getAllNews while finding user: " + err);
             } else {
-                if (adminUser.access == 1) {
+                if(adminUser)
+                    if (adminUser.access == 1) {
                     News.find({}, function (err, news) {
                         if (err) {
                             console.log(err);
@@ -1061,40 +1212,45 @@ router.post('/searchVerifiedNewsByTitle', function (req, res) {
     let data = {success: "0", data: ''};
     try {
         let user_id = req.body.user_id;
-        Admin.findOne({_id: user_id,verify:true}, function (err, adminUser) {
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
             if (err) {
                 console.log("Error in searchNewsByTitle while finding user: " + err);
             } else {
                 let searchCriteria;
-                if (adminUser.access == 1) {
-                    searchCriteria = {titleSearch: {$regex: '^' + req.body.title}};
-                } else {
-                    searchCriteria = {titleSearch: {$regex: '^' + req.body.title}, verify: false};
-                }
-                News.find(searchCriteria, {
-                    tags: 0,
-                    titleSearch: 0,
-                    url: 0,
-                    tagPrimary: 0,
-                    tagSecondary: 0,
-                    source: 0,
-                    date: 0,
-                    count: 0,
-                    category: 0
-                }, function (err, newsArray) {
-                    if (err) {
-                        console.info(err);
-                        res.send(data)
+                if(adminUser) {
+                    if (adminUser.access == 1) {
+                        searchCriteria = {titleSearch: {$regex: '^' + req.body.title},verify:true};
                     } else {
-                        if(newsArray){
-                            data.success = "1";
-                            data.data = newsArray;
-                        }else{
-                            data.data = "Error searching news via title";
-                        }
-                        res.send(data);
+                        searchCriteria = {titleSearch: {$regex: '^' + req.body.title}, verify: false};
                     }
-                });
+                    News.find(searchCriteria, {
+                        tags: 0,
+                        titleSearch: 0,
+                        url: 0,
+                        tagPrimary: 0,
+                        tagSecondary: 0,
+                        source: 0,
+                        date: 0,
+                        count: 0,
+                        category: 0
+                    }, function (err, newsArray) {
+                        if (err) {
+                            console.info(err);
+                            res.send(data)
+                        } else {
+                            if (newsArray) {
+                                data.success = "1";
+                                data.data = newsArray;
+                            } else {
+                                data.data = "Error searching news via title";
+                            }
+                            res.send(data);
+                        }
+                    });
+                }else{
+                    data.data = "No admin user found";
+                    res.send(data);
+                }
             }
         });
     }catch(err){
@@ -1115,12 +1271,11 @@ router.post('/searchUnverifiedNewsByTitle', function (req, res) {
                 console.log("Error in searchUnverifiedNewsByTitle while finding user: " + err);
             } else {
                 let searchCriteria = {titleSearch: {$regex: '^' + req.body.title}, verify: false};
-                News.find(searchCriteria, {
+                if(adminUser)
+                    News.find(searchCriteria, {
                     tags: 0,
                     titleSearch: 0,
                     url: 0,
-                    tagPrimary: 0,
-                    tagSecondary: 0,
                     source: 0,
                     date: 0,
                     count: 0,
@@ -1159,32 +1314,41 @@ router.post('/searchAdvertisementByTitle', function (req, res) {
                 console.log("Error in searchAdvertisementByTitle while finding user: " + err);
             } else {
                 let searchCriteria;
-                if (adminUser.access == 1) {
-                    searchCriteria = {type:"Advertisement",titleSearch: {$regex: '^' + req.body.title}};
-                } else {
-                    searchCriteria = {type:"Advertisement",titleSearch: {$regex: '^' + req.body.title}, verify: false};
-                }
-                News.find(searchCriteria, {
-                    tags: 0,
-                    titleSearch: 0,
-                    url: 0,
-                    tagPrimary: 0,
-                    tagSecondary: 0,
-                    source: 0,
-                    date: 0,
-                    count: 0,
-                    category: 0
-                }, function (err, newsArray) {
-                    if (err) {
-                        console.info(err);
-                        res.send(data)
+                if(adminUser) {
+                    if (adminUser.access == 1) {
+                        searchCriteria = {titleSearch: {$regex: '^' + req.body.title}};
                     } else {
-                        console.log(newsArray);
-                        data.success = "1";
-                        data.data = newsArray;
-                        res.send(data);
+                        searchCriteria = {
+                            type: "Advertisement",
+                            titleSearch: {$regex: '^' + req.body.title},
+                            verify: false
+                        };
                     }
-                });
+                    Advertisement.find(searchCriteria, {
+                        tags: 0,
+                        titleSearch: 0,
+                        url: 0,
+                        tagPrimary: 0,
+                        tagSecondary: 0,
+                        source: 0,
+                        date: 0,
+                        count: 0,
+                        category: 0
+                    }, function (err, newsArray) {
+                        if (err) {
+                            console.info(err);
+                            res.send(data)
+                        } else {
+                            console.log(newsArray);
+                            data.success = "1";
+                            data.data = newsArray;
+                            res.send(data);
+                        }
+                    });
+                }else{
+                    data.data = "No admin user found";
+                    res.send(data);
+                }
             }
         });
     }catch(err){
@@ -1204,8 +1368,9 @@ router.post('/searchUnverifiedAdvertisementByTitle', function (req, res) {
             if (err) {
                 console.log("Error in searchUnverifiedAdvertisementByTitle while finding user: " + err);
             } else {
-                let searchCriteria = {type:"Advertisement",titleSearch: {$regex: '^' + req.body.title}, verify: false};
-                News.find(searchCriteria, {
+                let searchCriteria = {titleSearch: {$regex: '^' + req.body.title}, verify: false};
+                if(adminUser)
+                    Advertisement.find(searchCriteria, {
                     tags: 0,
                     titleSearch: 0,
                     url: 0,
@@ -1293,7 +1458,7 @@ router.post('/getNewsByTitle',function (req,res) {
 router.post('/getAdvertisementByTitle',function (req,res) {
     let data = {success: "0", data: ''};
     try {
-        News.findOne({type:"Advertisement",title: req.body.title}, {titleSearch: 0, date: 0, count: 0}, function (err, advertisement) {
+        Advertisement.findOne({title: req.body.title}, {titleSearch: 0, date: 0, count: 0}, function (err, advertisement) {
             if (err) {
                 res.send(data);
             } else {

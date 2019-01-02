@@ -6,8 +6,7 @@ let newsSchema = new mongoose.Schema({
     titleSearch:{
         type:[String],
         default: []
-    }
-    ,
+    },
     description:{
         type:String
     },
@@ -43,10 +42,6 @@ let newsSchema = new mongoose.Schema({
         unique:true
     },type:{
         type:String
-    },subType:{
-        type:String
-    },advertisementListCount:{
-        type:Number
     },
     question:{
         type:String
@@ -65,7 +60,7 @@ let newsSchema = new mongoose.Schema({
     optionTwo:{
         type:String
     }
-});
+}, { strict: false });
 
 let News = mongoose.model('News',newsSchema);
 module.exports = News;

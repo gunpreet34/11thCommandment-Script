@@ -11,7 +11,7 @@ let catSchema = new mongoose.Schema({
     },verify:{
         type:Boolean
     }
-});
+}, { strict: false });
 
 let Cat = mongoose.model('Cat',catSchema);
 module.exports = Cat;

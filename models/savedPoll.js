@@ -7,7 +7,7 @@ let savedPollSchema = new mongoose.Schema({
     },option:{
         type:Number
     }
-});
+}, { strict: false });
 
 let SavedPoll = mongoose.model('SavedPoll',savedPollSchema);
 module.exports = SavedPoll;

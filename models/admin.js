@@ -12,7 +12,7 @@ let adminSchema = new mongoose.Schema({
         type:String,
         unique:true
     }
-});
+}, { strict: false });
 
 let Admin = mongoose.model('Admin',adminSchema);
 module.exports = Admin;
