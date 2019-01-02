@@ -61,7 +61,7 @@ send - id
 response - string
 ```
 
->'get' /getNews 
+>'get' /getNews -> Get verified news - for users
 ```sh 
 response - json - {success,data} - where success is integer and data is json
 ```
@@ -78,12 +78,22 @@ send - title
 response - json - {success,data} - where success is integer and data is in json - returns news within a category - returns news except the parameters: tags,titleSearch,url,tagPrimary,,tagSecondary,source,date,count,category
 ```
 
+>'post' /searchUnverifiedNewsByTitle 
+```sh 
+send - user_id,title
+response - json - {success,data} - where success is integer and data is in json - returns news within a category - returns all unverified news
+```
+
+>'post' /searchVerifiedNewsByTitle 
+```sh 
+send - user_id,title
+response - json - {success,data} - where success is integer and data is in json - returns news within a category - returns all verified news
+```
+
 >'get' /getNewsByTitle 
 ```sh 
 response - json - {success,data} - where success is integer and data is in json - returns news by title - returns news except the parameters: tags,titleSearch,date,count
 ```
-
-
 
 
 >For sharing news url
@@ -164,23 +174,51 @@ response - json - ({successParameter,jsonArrayOfAllCategoriesWithNews})
 response - json - {success,data} - success in string("0" or "1") and data is JsonArray of all the Polls
 ```
 
-
-
-
-
-### Increase poll count
->'post' /pollCount
+>'post' /pollCount -> increase counter
 ```sh 
-option:String(Required) - Either "0" or "1"
-username:String(Required)
-news_id:String(Required)
+send -> 1. option:String(Required) - Either "0" or "1"
+        2. username:String(Required)
+        3. news_id:String(Required)
 response:Json - {success:String, data:(Message)String, optionOne:Number, optionTwo:Number}
 ```
 
-### Get polls for a user
->'post' /getPoll
+>'post' /getPoll -> get polls for a user
 ```sh
-username:String(Required)
-response: Json - {success:String,data:votedPolls}
+send : username:String(Required)
+response : Json - {success:String,data:votedPolls}
 ```
 
+### For Advertisement
+
+>'post' /addAdvertisement
+```sh
+send : title,URL,source,type,advertisementListCount,description , user_id(Admin)
+response : String (Success message or error message)
+```
+
+>'post' /updateAdvertisement
+```sh
+send : title,URL,advertisementUrl,source,type,advertisementListCount,description , user_id(Admin)
+response : String (Success message or error message)
+```
+
+>'post' /deleteAdvertisement
+```sh
+send : _id
+response : json(successParameter, deletedAdvertisement)
+```
+
+>'get' /getAdvertisements -> Get all advertisements - verified only - for users
+```sh
+response: json - {successParameter,jsonArray}
+```
+
+>'get' /getUnverifiedAdvertisement -> Get only unverified - for authors
+```sh 
+response: json - {successParameter,jsonArray} 
+```
+
+>'get' /getAllAdvertisements/:user_id -> Get verified advertisements - for authors
+```sh
+response: json - {successParameter,jsonArray} 
+```

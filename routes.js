@@ -431,6 +431,7 @@ router.post('/addAdvertisement',function (req, res) {
                 let date = newAdvertisement.date.split('.');
                 newAdvertisement.uniqueUrl += date[0];
                 newAdvertisement.description = req.body.description;
+                newAdvertisement.shown = req.body.shown;
                 if (user_access) {
                     newAdvertisement.verify = true;
                 } else {
@@ -552,7 +553,7 @@ router.post('/deleteAdvertisement', function (req, res) {
 router.get('/getAdvertisements',function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        Advertisement.find({verify: true}, function (err, advertisement) {
+        Advertisement.find({verify: true,shown:true}, function (err, advertisement) {
             if (err) {
                 data.data = "Network error";
             } else {
@@ -598,7 +599,7 @@ router.get('/getUnverifiedAdvertisements',function (req, res) {
     }
 });
 
-//Get all advertisements - for authors
+//Get verified advertisements - for authors
 router.get('/getAllAdvertisements/:user_id', function (req, res) {
     let data = {success: "0", data: ''};
     try {
