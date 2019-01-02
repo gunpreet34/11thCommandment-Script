@@ -47,12 +47,13 @@ email-string
 
 >'post' /registerSuccess
 ```sh 
-name:String(required)
-email:String(Unique.required)
-password:String(required)
-access:String ("0" for Editor and "1" for Admin) - (Required)
-number:Number(Required)
-response:Json - {success:String,data:Msg to be shown}
+send ->
+        1.name:String(required)
+        2.email:String(Unique.required)
+        3.password:String(required)
+        4.access:String ("0" for Editor and "1" for Admin) - (Required)
+        5.number:Number(Required)
+response: Json - {success:String,data:Msg to be shown}
 ```
 
 >'post' /adminLogin
@@ -81,11 +82,11 @@ verify-boolean
 uniqueUrl-string
 type-string
 //For poll
-question
-optionOne
-optionTwo
-optionOneCount
-optionTwoCount
+question-string
+optionOne-string
+optionTwo-string
+optionOneCount-number
+optionTwoCount-number
 ```
 
 >'post' /postNews 
