@@ -46,6 +46,15 @@ extras - tags(for category splitting),titleSearch(for title splitting into words
 response - string
 ```
 
+>'post' /updateNews 
+```sh 
+find admin via -> user_id
+find news via -> _id
+send - title,description,url,category(separated by ','),count,tagPrimary,tagSecondary,imageURL,source,type(poll or news),question,optionOne,optionTwo
+extras - tags(for category splitting),titleSearch(for title splitting into words)
+response - string
+```
+
 >'post' /deleteNews 
 ```sh 
 send - id
@@ -75,13 +84,12 @@ response - json - {success,data} - where success is integer and data is in json 
 ```
 
 
->'post' /updateNews 
-```sh 
-find admin via -> user_id
-find news via -> _id
-send - title,description,url,category(separated by ','),count,tagPrimary,tagSecondary,imageURL,source,type(poll or news),question,optionOne,optionTwo
-extras - tags(for category splitting),titleSearch(for title splitting into words)
-response - string
+
+
+>For sharing news url
+```sh
+Share -> "https://commandment-api.herokuapp.com/news/" + uniqueUrl
+get request to above url will return the news in Json format
 ```
 
 ### For bookmarking news
@@ -98,18 +106,45 @@ send - username
 response - json - {success,data} - where success is integer and data is in json - returns news by id
 ```
 
+>'post' /deleteBookmark 
+```sh
+send - username,news_id
+response - json - {success,data} - success in string("0" or "1") and data is String containing the message
+```
+
 ### For categories
 
 >'post' /addCategory
 ```sh
-send - category(name),image(base64 encoded image)
+send - category(name),image(url),user_id(Author)
 response - String (Either -> Category added OR -> Error) 
 ```
 
 >'post' /updateCategory
-```sh 
-send - 
-response - 
+```sh
+send - category(name),image(url),user_id(Author)
+response - String (Either -> Category added OR -> Error) 
+```
+
+>'post' /deleteCategory
+```sh
+send - _id(category id)
+response - json(success:0 means failure, success:1 means success, data has message embedded)
+```
+
+>'get' /getUnverifiedCategories
+```sh
+response - json({successParameter,jsonArrayOfUnverifiedCategories})
+```
+
+>'get' /getVerifiedCategories
+```sh
+response - json({successParameter,jsonArrayOfVerifiedCategories})
+```
+
+>'get' /getCategory/:id
+```sh
+response - json({successParameter,jsonOfCategoryCorrespondingToId})
 ```
 
 >'get' /getCategories
@@ -117,23 +152,21 @@ response -
 response - json - {success,data} - where success is integer and data is json
 ``` 
 
-For getting polls
-/getPolls - Post request
+>'get' /getCategoriesWithNews -> Get only those categories which have news
+```sh
+response - json - ({successParameter,jsonArrayOfAllCategoriesWithNews})
+```
+
+### For polls
+
+>'post' /getPolls 
+```sh
 response - json - {success,data} - success in string("0" or "1") and data is JsonArray of all the Polls
+```
 
-For removing bookmarks
-/deleteBookmark - post request
-send - username,news_id
-response - json - {success,data} - success in string("0" or "1") and data is String containing the message
 
-For sharing news url
-Share -> "https://commandment-api.herokuapp.com/news/" + uniqueUrl
-get request to above url will return the news
 
-Get categories - Only those categories which have news in it
-/getCategoriesWithNews/:category -GET request
-Nothing to send
-Response - json - {success,data} - success in string("0" or "1") and data is json containing categories
+
 
 ### Increase poll count
 >'post' /pollCount

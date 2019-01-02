@@ -179,11 +179,26 @@ router.post('/addCategory', function (req, res) {
         let buffer = new Buffer(data, 'base64');
         fs.writeFile(cat.category, buffer);
         */
-        cat.save({category: req.body.category}, function (err, result) {
+        let user_id = req.body.user_id;
+        let user_access = 0;
+        Admin.findOne({_id: user_id}, function (err, adminUser) {
             if (err) {
-                res.send(err);
+                console.log("Error while finding user: " + err);
             } else {
-                res.send("Category added");
+                if (adminUser)
+                    user_access = adminUser.access;
+                if (user_access) {
+                    cat.verify = true;
+                }else {
+                    cat.verify = false;
+                }
+                cat.save({category: req.body.category}, function (err, result) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        res.send("Category added");
+                    }
+                });
             }
         });
     }catch(err){
