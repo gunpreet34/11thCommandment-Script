@@ -3,6 +3,10 @@ let router = express.Router();
 let sortJson = require('sort-json-array');
 let fs = require('fs');
 let admin = require('firebase-admin');
+let csvToJson = require('convert-csv-to-json');
+let multer  = require('multer')
+let upload = multer({ dest: 'uploads/' })
+
 
 //Importing models
 let User = require('./models/user');
@@ -41,6 +45,38 @@ let pushNotification = function (title,message,imageURL,id) {
         console.log("Error: "+error);
     });
 };
+
+//Upload Multiple news
+router.get('/uploadMultipleNews',function (req, res) {
+    res.render('multipleNews.ejs');
+});
+
+router.post('/postMultipleNews',upload.single('inputFile'),function (req, res, next) {
+    let response;
+    let myfile = "uploads" + "/"+req.file.name;
+    fs.readFile(req.file.path,function(e,file){
+        fs.writeFile(myfile,data,function(err){
+            if(err){
+                console.log(err);
+            }else{
+                if(myfile){
+                    let json = csvToJson.getJsonFromCsv(req.file);
+                    for(let i=0; i<json.length;i++){
+                        console.log(json[i]);
+                    }
+                }
+                response = {
+                    msg : "File uploaded successfully!",
+                    filename : req.file.originalname
+                };
+            }
+
+            console.log(response);
+            res.send(response);
+        });
+    });
+});
+
 
 //Admin registration page renderer
 router.get('/registerAdmin', function(req, res){
@@ -1179,26 +1215,29 @@ router.post('/getNewsByCategory', function (req, res) {
 router.get('/news/:url', function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        let callback = (err, news) => {
+        let newsCallback = (err, news) => {
             if (err) {
                 console.info(err);
                 res.send(data);
             } else {
-                console.log(req.params.url);
-                console.log(news);
-                data.success = "1";
-                data.data = news;
-                res.send(data);
+                if(news){
+                    console.log(req.params.url);
+                    console.log(news);
+                    data.success = "1";
+                    data.data = news;
+                    res.send(data);
+                }
             }
         };
-        console.info(req.body.category);
-        News.find({uniqueUrl: req.params.url}, callback);
+        News.find({uniqueUrl: req.params.url}, newsCallback);
     }catch(err){
         data.data = "Error in /news/:url: " + err;
         console.log(data.data);
         res.send(data)
     }
 });
+
+
 
 //Search news using title
 router.post('/searchVerifiedNewsByTitle', function (req, res) {
@@ -1291,6 +1330,34 @@ router.post('/searchUnverifiedNewsByTitle', function (req, res) {
         });
     }catch(err){
         data.data = "Error in /searchUnverifiedNewsByTitle: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
+
+});
+
+//Get advertisement by url
+
+router.get('/advertisement/:url',function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        let advertisementCallback = (err, advertisement) => {
+            if (err) {
+                console.info(err);
+                res.send(data);
+            } else {
+                if(advertisement){
+                    console.log(req.params.url);
+                    console.log(advertisement);
+                    data.success = "1";
+                    data.data = advertisement;
+                    res.send(data);
+                }
+            }
+        };
+        Advertisement.find({uniqueUrl: req.params.url}, advertisementCallback);
+    }catch(err){
+        data.data = "Error in /news/:url: " + err;
         console.log(data.data);
         res.send(data)
     }

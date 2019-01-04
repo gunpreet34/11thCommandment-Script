@@ -65,6 +65,12 @@ response:Json - {success:String,data:Msg to be shown}
 
 ### For news
 
+```sh
+
+Type -> News or Poll
+
+```
+
 #### Schema
 
 ```sh
@@ -262,6 +268,10 @@ response : Json - {success:String,data:votedPolls}
 ```
 
 ### For Advertisement
+
+```sh
+Type -> Simple(Non-intruisive),Image,Video
+```
 
 #### Schema
 
