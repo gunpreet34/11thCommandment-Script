@@ -280,7 +280,7 @@ router.post('/updateCategory', function (req, res) {
                         verify: false
                     };
                 }
-                Cat.findOneAndUpdate({_id: req.body._id}, {
+                Cat.findOneAndUpdate({category: req.body.category}, {
                     $set: set
                 }, {returnOriginal: false}, function (err, cat) {
                     if (err) {
