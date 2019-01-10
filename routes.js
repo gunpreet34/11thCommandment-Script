@@ -221,7 +221,6 @@ router.post('/addCategory', function (req, res) {
     try {
         let cat = Cat();
         cat.category = req.body.category;
-        cat.imageURL = req.body.image;
         /*let data = image.replace(/^data:image\/\w+;base64,/, "");
         let buffer = new Buffer(data, 'base64');
         fs.writeFile(cat.category, buffer);
