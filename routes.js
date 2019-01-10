@@ -409,7 +409,7 @@ router.post('/getCategoryByTitle', function (req, res) {
 router.get('/getCategories', function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        Cat.find({}, function (err, cats) {
+        Cat.find({verify:true}, function (err, cats) {
             if (err) {
                 console.log(err);
                 data.data = err;
