@@ -239,6 +239,7 @@ router.post('/addCategory', function (req, res) {
                 }else {
                     cat.verify = false;
                 }
+                cat.imageURL = req.body.imageURL;
                 cat.save({category: req.body.category}, function (err, result) {
                     if (err) {
                         res.send(err);
