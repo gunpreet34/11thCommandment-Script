@@ -4,9 +4,22 @@ let sortJson = require('sort-json-array');
 let fs = require('fs');
 let admin = require('firebase-admin');
 let csvToJson = require('convert-csv-to-json');
-let multer  = require('multer')
-let upload = multer({ dest: 'uploads/' })
-
+let Converter = require("csvtojson").Converter;
+let path = require('path');
+let multer  = require('multer');
+//let upload = multer({ dest: 'uploads/csv/' });
+let uploadCsv = {
+    storage : multer.diskStorage({
+        destination : function (req, file, next) {
+            next(null,'./uploads/csv');
+        },
+        filename : function (req, file, next) {
+            let ext = file.mimetype.split('/')[1];
+            next(null,file.fieldname + ext);
+        }
+    })
+};
+let upload = multer().single();
 
 //Importing models
 let User = require('./models/user');
@@ -51,30 +64,28 @@ router.get('/uploadMultipleNews',function (req, res) {
     res.render('multipleNews.ejs');
 });
 
-router.post('/postMultipleNews',upload.single('inputFile'),function (req, res, next) {
-    let response;
-    let myfile = "uploads" + "/"+req.file.name;
-    fs.readFile(req.file.path,function(e,file){
-        fs.writeFile(myfile,data,function(err){
-            if(err){
-                console.log(err);
-            }else{
-                if(myfile){
-                    let json = csvToJson.getJsonFromCsv(req.file);
-                    for(let i=0; i<json.length;i++){
-                        console.log(json[i]);
-                    }
-                }
-                response = {
-                    msg : "File uploaded successfully!",
-                    filename : req.file.originalname
-                };
-            }
-
-            console.log(response);
-            res.send(response);
-        });
+router.post('/postMultipleNews',multer(uploadCsv).single('inputFile'),function (req, res, next) {
+    let tmp_path = req.file.path;
+    let target_path = 'uploads/' + req.file.originalname;
+    let src = fs.createReadStream(tmp_path);
+    let dest = fs.createWriteStream(target_path);
+    src.pipe(dest);
+    let converter = new Converter({});
+    converter.fromFile("./uploads/csv/" + req.file.originalname,function(err,result){
+        // if an error has occured then handle it
+        if(err){
+            console.log("An Error Has Occured");
+            console.log(err);
+        }
+        // create a variable called json and store
+        // the result of the conversion
+        var json = result;
+        console.log(json);
+        for(let i=0; i<json.length;i++){
+            console.log(json[i]);
+        }
     });
+
 });
 
 
@@ -366,6 +377,30 @@ router.get('/getCategory/:id', function (req, res) {
         });
     }catch(err){
         data.data = "Error in /getCategory/:_id " + err;
+        res.send(data)
+    }
+});
+
+//Get category by name
+router.post('/getCategoryByTitle', function (req, res) {
+    let data = {success: "0", data: ''};
+    try {
+        Cat.find({category:req.body.category}, function (err, cat) {
+            if (err) {
+                console.log(err);
+                data.data = err;
+            }else{
+                if(!cat){
+                    data.data = "Error retrieving category";
+                }else{
+                    data.success = "1";
+                    data.data = cat;
+                }
+            }
+            res.send(data);
+        });
+    }catch(err){
+        data.data = "Error in /getCategoryByTitle " + err;
         res.send(data)
     }
 });

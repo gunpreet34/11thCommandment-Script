@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Upload csv file </title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Bootstrap Core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        p{
+            font-family: 'Roboto', sans-serif;
+            font-size: 48px;
+            text-align:center;
+        }
+    </style>
+</head>
+
+<body>
+<form action='/postMultipleNews' method="post" enctype="multipart/form-data">
+    <div class="container" style="margin:auto; padding:50px;">
+        <p>Select file to upload</p>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <input class="form-control" type="file" name="inputFile" required>
+                </div>
+            </div>
+            <p id="buttons"style="margin:auto; text-align:center;">
+                <input type="submit" name="submit" class="btn btn-success">Submit</input>
+            </p>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    /*let csv = document.getElementById('inputFile').files[0];
+    let formData = new FormData();
+    formData.append("uploadCsv",csv);
+    let request = new XMLHttpRequest();
+
+    //here you can set the request header to set the content type, this can be avoided.
+    //The browser sets the setRequestHeader and other headers by default based on the formData that is being passed in the request.
+    request.setRequestHeader("Content-type", "multipart/form-data"); //----(*)
+    request.open("POST","/postMultipleNews", true);
+    request.onreadystatechange = function (){
+        if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+            console.log("yay");
+        }
+    }
+
+    request.send(formData);*/
+
+</script>
+
+<!-- /.container-fluid -->
+<!-- Bootstrap Core JavaScript --
+,script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body>
+</html>
