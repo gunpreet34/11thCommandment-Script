@@ -334,9 +334,9 @@ router.post('/deleteCategory', function (req, res) {
 
 //Get unverified categories
 router.get('/getUnverifiedCategories', function (req, res) {
-    let data = {success: "0", data: '',verify:false};
+    let data = {success: "0", data: ''};
     try {
-        Cat.find({}, function (err, cats) {
+        Cat.find({verify:false}, function (err, cats) {
             if (err) {
                 console.log(err);
                 data.data = err;
