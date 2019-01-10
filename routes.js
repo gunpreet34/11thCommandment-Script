@@ -312,7 +312,7 @@ router.post('/updateCategory', function (req, res) {
 router.post('/deleteCategory', function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        Cat.deleteOne({_id:req.body._id}, function (err, cat) {
+        Cat.deleteOne({catch:req.body.category}, function (err, cat) {
             if (err) {
                 console.log(err);
                 data.data = err;
