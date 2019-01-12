@@ -1,8 +1,7 @@
 let mongoose = require('mongoose');
 let advSchema = new mongoose.Schema({
     type:{
-        type:String,
-        unique:true
+        type:String
     },advertisementListCount:{
         type:Number,
         default:0
