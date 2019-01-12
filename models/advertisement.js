@@ -6,7 +6,8 @@ let advSchema = new mongoose.Schema({
         type:Number,
         default:0
     },title:{
-        type:String
+        type:String, 
+        unique:true
     },titleSearch:{
         type:[String],
         default:[]
