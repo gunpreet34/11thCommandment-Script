@@ -78,3 +78,9 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+#idea
+.idea
+
+#package-lock.json
+package-lock.json
