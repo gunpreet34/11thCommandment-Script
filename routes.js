@@ -3,11 +3,10 @@ let router = express.Router();
 let sortJson = require('sort-json-array');
 let fs = require('fs');
 let admin = require('firebase-admin');
-let csvToJson = require('convert-csv-to-json');
-let Converter = require("csvtojson").Converter;
+let csvToJson = require("csvtojson");
 let path = require('path');
 let multer  = require('multer');
-//let upload = multer({ dest: 'uploads/csv/' });
+let upload = multer({ dest: 'uploads/csv/' });
 let uploadCsv = {
     storage : multer.diskStorage({
         destination : function (req, file, next) {
@@ -19,7 +18,8 @@ let uploadCsv = {
         }
     })
 };
-let upload = multer().single();
+//let upload = multer().single();
+
 
 //Importing models
 let User = require('./models/user');
@@ -65,27 +65,68 @@ router.get('/uploadMultipleNews',function (req, res) {
 });
 
 router.post('/postMultipleNews',multer(uploadCsv).single('inputFile'),function (req, res, next) {
+    /*
+    ## Method 1
     let tmp_path = req.file.path;
-    let target_path = 'uploads/' + req.file.originalname;
+    let date = new Date().getTime();
+    let target_path = 'uploads/csv/' + date + req.file.originalname;
     let src = fs.createReadStream(tmp_path);
-    let dest = fs.createWriteStream(target_path);
-    src.pipe(dest);
-    let converter = new Converter({});
-    converter.fromFile("./uploads/csv/" + req.file.originalname,function(err,result){
-        // if an error has occured then handle it
-        if(err){
-            console.log("An Error Has Occured");
-            console.log(err);
-        }
-        // create a variable called json and store
-        // the result of the conversion
-        var json = result;
-        console.log(json);
-        for(let i=0; i<json.length;i++){
-            console.log(json[i]);
-        }
-    });
 
+    const csv=require('fast-csv');
+        var csvStream = csv()
+            .on("data", function(data){
+                console.log(data);
+                console.log("data");
+            })
+            .on("end", function(){
+                console.log("done");
+            });
+        src.pipe(csvStream);*/
+    /*}, 1000);*/
+
+
+    // ## Method 2
+    csvToJson().fromFile(req.file.path).then((jsonObj) => {
+        //console.log(jsonObj);
+        jsonObj.forEach((news) => {
+            let newNews = News();
+            newNews.title = news.title;
+            newNews.titleSearch = news.title.split(' ').map(k => k.toLowerCase());
+            newNews.description = news.description;
+            newNews.url = news.url;
+            newNews.category = news.category + "";
+            newNews.imageURL = news.imageURL;
+            newNews.source = news.source;
+            newNews.date = new Date().getTime() / 1000;
+            newNews.verify = false;
+            newNews.tags = news.category.split(', ').map(k => k.toLowerCase());
+            newNews.type = news.type;
+            //If Poll
+            newNews.question = news.question;
+            newNews.optionOne = news.optionOne;
+            newNews.optionTwo = news.optionTwo;
+            newNews.optionOneCount = 0;
+            newNews.optionTwoCount = 0;
+            //Url to be shared
+            newNews.uniqueUrl = news.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "_");
+            let date = newNews.date.split('.');
+            newNews.uniqueUrl += date[0];
+            //console.log(newNews);
+            newNews.save(function (err, savedNews) {
+                if (err) {
+                    console.log("Error in uploading multiple news:: " + err);
+                } else {
+                    if (!savedNews) {
+                        console.log("Error in uploading multiple news:: Empty news");
+                    } else {
+                        console.log("News with title :: " + savedNews.title + " saved");
+                    }
+                }
+            });
+
+        });
+
+    });
 });
 
 
