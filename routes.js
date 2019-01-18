@@ -87,7 +87,6 @@ router.post('/postMultipleNews',multer(uploadCsv).single('inputFile'),function (
 
     // ## Method 2
     csvToJson().fromFile(req.file.path).then((jsonObj) => {
-        //console.log(jsonObj);
         jsonObj.forEach((news) => {
             let newNews = News();
             newNews.title = news.title;

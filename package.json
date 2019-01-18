@@ -16,7 +16,7 @@
     "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.1",
     "fast-csv": "^2.4.1",
-    "firebase-admin": "^6.3.0",
+    "firebase-admin": "^6.5.0",
     "forever": "^0.15.3",
     "fs": "0.0.1-security",
     "mongoose": "^5.3.3",
