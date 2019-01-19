@@ -4,7 +4,6 @@ let sortJson = require('sort-json-array');
 let fs = require('fs');
 let admin = require('firebase-admin');
 let csvToJson = require("csvtojson");
-let path = require('path');
 let multer  = require('multer');
 let upload = multer({ dest: 'uploads/csv/' });
 let uploadCsv = {
@@ -18,7 +17,6 @@ let uploadCsv = {
         }
     })
 };
-//let upload = multer().single();
 
 
 //Importing models
@@ -900,7 +898,7 @@ router.post('/postNews', function (req, res) {
                 newNews.uniqueUrl += date[0];
                 if(newNews.type != "Advertisement"){
                     newNews.category.split(', ').forEach((cat) => {
-                        Cat.findOneAndUpdate({category: req.body.category}, {
+                        Cat.findOneAndUpdate({category: cat}, {
                             $inc: {
                                 count: 1
                             }
@@ -913,7 +911,7 @@ router.post('/postNews', function (req, res) {
                                 }
                             } else {
                                 if (!category) {
-                                    console.log("Not found");
+                                    console.log("Not found :: " + category);
                                 } else {
                                     if (cat == "") {
                                         console.log("Empty Category. Not adding");
