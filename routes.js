@@ -1,11 +1,12 @@
 let express = require('express');
 let router = express.Router();
 let sortJson = require('sort-json-array');
-let fs = require('fs');
 let admin = require('firebase-admin');
 let csvToJson = require("csvtojson");
 let multer  = require('multer');
-let upload = multer({ dest: 'uploads/csv/' });
+let http = require('http');
+
+//For csv uploading
 let uploadCsv = {
     storage : multer.diskStorage({
         destination : function (req, file, next) {
@@ -17,6 +18,10 @@ let uploadCsv = {
         }
     })
 };
+
+//For image uploading
+const uploadImage = require('./services/uploadImage');
+const uploadSingleImage = uploadImage.single('image')
 
 
 //Importing models
@@ -126,6 +131,28 @@ router.post('/postMultipleNews',multer(uploadCsv).single('inputFile'),function (
     });
 });
 
+//Upload photo
+router.get('/uploadPicture',function (req, res) {
+    res.render('uploadPicture.ejs');
+});
+
+router.post('/postPicture',function (req, res) {
+
+    uploadSingleImage(req,res,function (err, some) {
+        if (err) {
+            return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err.message}] });
+        }
+
+        /*http.createServer(function (req, res) {
+            res.write('<html><head></head><body>');
+            res.write('<p>req.file.location</p>');
+            res.end('</body></html>');
+        });*/
+        //return res.json({'imageUrl': req.file.location});
+        return res.send(req.file.location);
+    })
+
+});
 
 //Admin registration page renderer
 router.get('/registerAdmin', function(req, res){
