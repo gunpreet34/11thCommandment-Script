@@ -142,13 +142,6 @@ router.post('/postPicture',function (req, res) {
         if (err) {
             return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err.message}] });
         }
-
-        /*http.createServer(function (req, res) {
-            res.write('<html><head></head><body>');
-            res.write('<p>req.file.location</p>');
-            res.end('</body></html>');
-        });*/
-        //return res.json({'imageUrl': req.file.location});
         return res.send(req.file.location);
     })
 
@@ -222,6 +215,69 @@ router.post('/adminLogin',function (req, res) {
         res.send(data)
     }
 
+});
+
+//Send reset password link via mail
+router.post('/sendMail',function (req, res) {
+
+});
+
+//Reset password
+router.get('/resetPassword/:id',function (req, res) {
+    res.render('resetPassword.ejs');
+});
+
+//Reset Success
+router.post('/resetSuccess',function (req, res) {
+    let data = {success:"0",data:""};
+    try{
+        let admin = Admin();
+
+        admin.password = req.body.password;
+        admin.number = req.body.number;
+        if(admin.password == req.body.repeatedPassword){
+            Cat.findOneAndUpdate({category: req.body.category}, {
+                $set: set
+            }, {returnOriginal: false}, function (err, cat) {
+                if (err) {
+                    try {
+                        res.send("Error updating: " + err);
+                    } catch (er) {
+                        console.log(er);
+                    }
+                } else {
+                    if (!cat) {
+                        res.send("Not found");
+                    } else {
+                        if (user_access) {
+                            res.send("Successfully updated");
+                        }
+                    }
+                }
+            });
+            admin.save(function (err, savedAdmin) {
+                if(err){
+                    data.data = err;
+                }else{
+                    if(savedAdmin != null){
+                        data.success = "1";
+                        data.data = "User " + req.body.name + " saved successfully";
+                        data.data = savedAdmin.data;
+                    }else{
+                        data.data = "Unexpected Error";
+                    }
+                }
+                res.send(data);
+            });
+        }else{
+            data.data = "Passwords do not match";
+            res.send(data);
+        }
+    }catch(err){
+        data.data = "Error in /registerSuccess: " + err;
+        console.log(data.data);
+        res.send(data)
+    }
 });
 
 //Normal user register post request
