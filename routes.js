@@ -4,7 +4,9 @@ let sortJson = require('sort-json-array');
 let admin = require('firebase-admin');
 let csvToJson = require("csvtojson");
 let multer  = require('multer');
-let http = require('http');
+let nodemailer = require('nodemailer');
+const {google} = require("googleapis");
+
 
 //For csv uploading
 let uploadCsv = {
@@ -32,10 +34,11 @@ let Cat = require('./models/category');
 let SavedPoll = require('./models/savedPoll');
 let Admin = require('./models/admin');
 let Advertisement = require('./models/advertisement');
+let PasswordResetRequest = require('./models/passwordResetRequest');
 
-let serviceAccount=require("./private/commandment-1542387209123-firebase-adminsdk-oazeh-e68716fd65.json");
 
 //Initialize app for firebase use
+let serviceAccount=require("./private/commandment-1542387209123-firebase-adminsdk-oazeh-e68716fd65.json");
 admin.initializeApp({
     credential:admin.credential.cert(serviceAccount),
     databaseURL:"https://noti.firebaseio.com"
@@ -219,8 +222,145 @@ router.post('/adminLogin',function (req, res) {
 
 //Send reset password link via mail
 router.post('/sendMail',function (req, res) {
+    /*console.log("Request for reset");
+    let user_id = req.body.user_id;
+    let time = new Date().getTime();
+    let passwordResetRequest = PasswordResetRequest();
+    passwordResetRequest.user_id = user_id;
+    passwordResetRequest.time = time;
+
+    const oAuth2 = google.auth.OAuth2;
+    const oauth2Client = new oAuth2(
+        "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
+        "PdSR6qdNpAyi4v0wxvCMcWKW",
+        "https://developers.google.com/oauthplayground" // Redirect URL
+    );
+
+    oauth2Client.setCredentials({
+        refresh_token: "1/FcnIEcC-8pT9T0DNmoxKrRbX9stPzjSA3eiQFhTVfyw"
+    });
+    /!*const tokens = oauth2Client.refreshAccessToken();
+    const accessToken = tokens.credentials.access_token;*!/
+
+    const smtpTransport = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            type: "OAuth2",
+            user: "11thcommandmentaggr@gmail.com",
+            clientId: "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
+            clientSecret: "PdSR6qdNpAyi4v0wxvCMcWKW",
+            refreshToken: "1/5VIV4jcJ6DqTAdAVox51u7xxKUhlaCdJ8mCW40XPce4"
+        }
+    });
+
+    const mailOptions = {
+        from: "11thcommandmentaggr@gmail.com",
+        to: "gunpreet.34@gmail.com",
+        subject: "Node.js Email with Secure OAuth",
+        generateTextFromHTML: true,
+        html: "<b>test</b>"
+    };
+
+    smtpTransport.sendMail(mailOptions, (error, response) => {
+        error ? console.log(error) : console.log(response);
+        smtpTransport.close();
+    });*/
+
+    /*let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: false,
+        auth: {
+            user: '11thcommandmentaggr@gmail.com',
+            pass: 'Aggregation123'
+        }
+    });
+    let mailOptions = {
+        from: '"Krunal Lathiya" <11thcommandmentaggr@gmail.com>', // sender address
+        to: "gunpreet.34@gmail.com", // list of receivers
+        subject: "sub", // Subject line
+        text: "body", // plain text body
+        html: '<b>NodeJS Email Tutorial</b>' // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+        res.render('index');
+    });*/
+
+    main();
+
+    /*let transporter = nodemailer.createTransport({
+        service: 'gmail',
+    host: 'smtp.gmail.com',
+    secure: 'true',
+    port: '465',
+    auth: {
+        type: 'OAuth2', //Authentication type
+        user: '11thcommandmentaggr@gmail.com',
+        clientId: '469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com',
+        clientSecret: 'PdSR6qdNpAyi4v0wxvCMcWKW',
+        refreshToken: '1/5VIV4jcJ6DqTAdAVox51u7xxKUhlaCdJ8mCW40XPce4'
+    }
+});
+
+
+    let mailOptions = {
+        from: 'TrendMasala',
+        to: 'gunpreet.34@gmail.com',
+        subject: 'Sending Email using Node.js',
+        text: 'That was easy!'
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });*/
 
 });
+
+async function main(){
+
+    // Generate test SMTP service account from ethereal.email
+    // Only needed if you don't have a real mail account for testing
+    let account = await nodemailer.createTestAccount();
+
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: "11thcommandmentaggr@gmail.com", // generated ethereal user
+            pass: "Aggregation123" // generated ethereal password
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: '"Fred Foo" <11thcommandmentaggr@gmail.com>', // sender address
+        to: "gunpreet.34@gmail.com", // list of receivers
+        subject: "Hello", // Subject line
+        text: "Hello world?" // plain text body
+    };
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail(mailOptions);
+
+    console.log("Message sent: %s", info.messageId);
+    // Preview only available when sending through an Ethereal account
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+}
+
 
 //Reset password
 router.get('/resetPassword/:id',function (req, res) {
@@ -229,55 +369,7 @@ router.get('/resetPassword/:id',function (req, res) {
 
 //Reset Success
 router.post('/resetSuccess',function (req, res) {
-    let data = {success:"0",data:""};
-    try{
-        let admin = Admin();
-
-        admin.password = req.body.password;
-        admin.number = req.body.number;
-        if(admin.password == req.body.repeatedPassword){
-            Cat.findOneAndUpdate({category: req.body.category}, {
-                $set: set
-            }, {returnOriginal: false}, function (err, cat) {
-                if (err) {
-                    try {
-                        res.send("Error updating: " + err);
-                    } catch (er) {
-                        console.log(er);
-                    }
-                } else {
-                    if (!cat) {
-                        res.send("Not found");
-                    } else {
-                        if (user_access) {
-                            res.send("Successfully updated");
-                        }
-                    }
-                }
-            });
-            admin.save(function (err, savedAdmin) {
-                if(err){
-                    data.data = err;
-                }else{
-                    if(savedAdmin != null){
-                        data.success = "1";
-                        data.data = "User " + req.body.name + " saved successfully";
-                        data.data = savedAdmin.data;
-                    }else{
-                        data.data = "Unexpected Error";
-                    }
-                }
-                res.send(data);
-            });
-        }else{
-            data.data = "Passwords do not match";
-            res.send(data);
-        }
-    }catch(err){
-        data.data = "Error in /registerSuccess: " + err;
-        console.log(data.data);
-        res.send(data)
-    }
+    console.log("data " + req.body.data);
 });
 
 //Normal user register post request
