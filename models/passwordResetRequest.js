@@ -4,7 +4,9 @@ let passwordResetRequestSchema = new mongoose.Schema({
             type: Number
         }, user_id: {
             type: String
-        }
+        },otp:{
+            type: Number
+    }
     });
 
 let PasswordResetRequest = mongoose.model('PasswordResetRequest',passwordResetRequestSchema);

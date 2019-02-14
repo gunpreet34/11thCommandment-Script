@@ -222,76 +222,46 @@ router.post('/adminLogin',function (req, res) {
 
 //Send reset password link via mail
 router.post('/sendMail',function (req, res) {
-    /*console.log("Request for reset");
+    console.log("Request for reset");
+    let data = {success:0,data:""};
     let user_id = req.body.user_id;
     let time = new Date().getTime();
-    let passwordResetRequest = PasswordResetRequest();
-    passwordResetRequest.user_id = user_id;
-    passwordResetRequest.time = time;
+    try{
+        Admin.findOne({email: user_id}, function (error, admin) {
+            if (error) {
+                data.data = "1 " +  error;
+                console.log(data);
+            }
+            if (!admin) {
+                data.data = "User not registered";
+                res.send(data);
+            } else {
+                let otp = Math.floor(1000 + Math.random() * 9000);
+                let entry = {user_id:user_id, time:time, otp:otp};
+                /*let passwordResetRequest = PasswordResetRequest();
+                passwordResetRequest.user_id = user_id;
+                passwordResetRequest.time = time;
+                passwordResetRequest.otp = Math.floor(1000 + Math.random() * 9000);*/
+                PasswordResetRequest.findOneAndUpdate({user_id:user_id}, entry, {upsert: true}, function (err, savedPasswordResetRequest) {
+                    if(err){
+                        data.data = "2 " + err;
+                        res.send(data);
+                    }else{
+                        data.success = 1;
+                        data.data = "Mail sent successfully. Please check your inbox";
+                        let mail = "Your OTP for password change is " + otp + " . " + "Request is valid for 5 minutes. To reset password click on the link below: \n " + "https://commandment-api.herokuapp.com/resetPassword/" + savedPasswordResetRequest._id + " ." ;
+                        sendMail(mail,user_id);
+                        res.send(data);
+                    }
+                });
 
-    const oAuth2 = google.auth.OAuth2;
-    const oauth2Client = new oAuth2(
-        "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
-        "PdSR6qdNpAyi4v0wxvCMcWKW",
-        "https://developers.google.com/oauthplayground" // Redirect URL
-    );
+            }
 
-    oauth2Client.setCredentials({
-        refresh_token: "1/FcnIEcC-8pT9T0DNmoxKrRbX9stPzjSA3eiQFhTVfyw"
-    });
-    /!*const tokens = oauth2Client.refreshAccessToken();
-    const accessToken = tokens.credentials.access_token;*!/
-
-    const smtpTransport = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            type: "OAuth2",
-            user: "11thcommandmentaggr@gmail.com",
-            clientId: "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
-            clientSecret: "PdSR6qdNpAyi4v0wxvCMcWKW",
-            refreshToken: "1/5VIV4jcJ6DqTAdAVox51u7xxKUhlaCdJ8mCW40XPce4"
-        }
-    });
-
-    const mailOptions = {
-        from: "11thcommandmentaggr@gmail.com",
-        to: "gunpreet.34@gmail.com",
-        subject: "Node.js Email with Secure OAuth",
-        generateTextFromHTML: true,
-        html: "<b>test</b>"
-    };
-
-    smtpTransport.sendMail(mailOptions, (error, response) => {
-        error ? console.log(error) : console.log(response);
-        smtpTransport.close();
-    });*/
-
-    /*let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: false,
-        auth: {
-            user: '11thcommandmentaggr@gmail.com',
-            pass: 'Aggregation123'
-        }
-    });
-    let mailOptions = {
-        from: '"Krunal Lathiya" <11thcommandmentaggr@gmail.com>', // sender address
-        to: "gunpreet.34@gmail.com", // list of receivers
-        subject: "sub", // Subject line
-        text: "body", // plain text body
-        html: '<b>NodeJS Email Tutorial</b>' // html body
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Message %s sent: %s', info.messageId, info.response);
-        res.render('index');
-    });*/
-
-    main();
+        });
+    }catch (err){
+        data.data = "3 " + err;
+        res.send(data);
+    }
 
     /*let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -323,31 +293,90 @@ router.post('/sendMail',function (req, res) {
         }
     });*/
 
+    /*const oAuth2 = google.auth.OAuth2;
+    const oauth2Client = new oAuth2(
+        "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
+        "PdSR6qdNpAyi4v0wxvCMcWKW",
+        "https://developers.google.com/oauthplayground" // Redirect URL
+    );
+
+    oauth2Client.setCredentials({
+        refresh_token: "1/FcnIEcC-8pT9T0DNmoxKrRbX9stPzjSA3eiQFhTVfyw"
+    });
+    /*const tokens = oauth2Client.refreshAccessToken();
+    const accessToken = tokens.credentials.access_token;
+
+    const smtpTransport = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            type: "OAuth2",
+            user: "11thcommandmentaggr@gmail.com",
+            clientId: "469788640252-iarr2pvir0ib1494lcriur678cao615i.apps.googleusercontent.com",
+            clientSecret: "PdSR6qdNpAyi4v0wxvCMcWKW",
+            refreshToken: "1/5VIV4jcJ6DqTAdAVox51u7xxKUhlaCdJ8mCW40XPce4"
+        }
+    });
+
+    const mailOptions = {
+        from: "11thcommandmentaggr@gmail.com",
+        to: "gunpreet.34@gmail.com",
+        subject: "Node.js Email with Secure OAuth",
+        generateTextFromHTML: true,
+        html: "<b>test</b>"
+    };
+
+    smtpTransport.sendMail(mailOptions, (error, response) => {
+        error ? console.log(error) : console.log(response);
+        smtpTransport.close();
+    });
+
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: false,
+        auth: {
+            user: '11thcommandmentaggr@gmail.com',
+            pass: 'Aggregation123'
+        }
+    });
+    let mailOptions = {
+        from: '"Krunal Lathiya" <11thcommandmentaggr@gmail.com>', // sender address
+        to: "gunpreet.34@gmail.com", // list of receivers
+        subject: "sub", // Subject line
+        text: "body", // plain text body
+        html: '<b>NodeJS Email Tutorial</b>' // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+        res.render('index');
+    });*/
+
 });
 
-async function main(){
+async function sendMail(mailBody,email){
 
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    let account = await nodemailer.createTestAccount();
-
-    // create reusable transporter object using the default SMTP transport
+    // Reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
+        /*host: "smtp.gmail.com",
         port: 465,
-        secure: true, // true for 465, false for other ports
+        secure: true, // true for 465, false for other ports*/
+        service: 'Gmail',
         auth: {
-            user: "11thcommandmentaggr@gmail.com", // generated ethereal user
-            pass: "Aggregation123" // generated ethereal password
+            user: "11thcommandmentaggr@gmail.com", // user
+            pass: "Aggregation123" // password
         }
     });
 
     // setup email data with unicode symbols
     let mailOptions = {
-        from: '"Fred Foo" <11thcommandmentaggr@gmail.com>', // sender address
-        to: "gunpreet.34@gmail.com", // list of receivers
-        subject: "Hello", // Subject line
-        text: "Hello world?" // plain text body
+        from: "11thcommandmentaggr@gmail.com" , // sender address
+        to: email, // list of receivers
+        subject: "Password reset request - FutureCart", // Subject line
+        text: mailBody // plain text body
     };
 
     // send mail with defined transport object
@@ -357,8 +386,6 @@ async function main(){
     // Preview only available when sending through an Ethereal account
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
 
