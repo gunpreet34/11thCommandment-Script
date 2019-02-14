@@ -396,7 +396,41 @@ router.get('/resetPassword/:id',function (req, res) {
 
 //Reset Success
 router.post('/resetSuccess',function (req, res) {
+    let data = {success:0,data:""};
     console.log("data " + req.body.data);
+    let password = req.body.data.password;
+    let otp = req.body.data.otp;
+    let req_id = req.body.data._id;
+
+    //Isse pehle
+
+    let passwordResetRequest = PasswordResetRequest();
+    passwordResetRequest.findOne({_id:req_id},function (err, request) {
+        if(err){
+            data.data = err;
+        }else {
+            if(request){
+                if(request.otp == otp){
+                    let query = {email:request.user_id};
+                    let entry = {password:password};
+                    Admin.findOneAndUpdate(query,entry,{upsert:true},function (err, admin) {
+                        if(err){
+                            data.data = err;
+                        }else{
+                            data.success = 1;
+                            data.data = "Password reset successfully";
+                        }
+                    });
+
+                }else{
+                    data.data = "Otp doesn't match";
+                }
+
+            }else {
+                data.data = "You are not authorised to change the password. Please request for password again to prove you are the holder of this account";
+            }
+        }
+    })
 });
 
 //Normal user register post request
@@ -943,7 +977,7 @@ router.get('/getAllAdvertisements/:user_id', function (req, res) {
 router.get('/getPolls',function (req, res) {
     let data = {success: "0", data: ''};
     try {
-        News.find({type: "Poll", verify: true}, function (err, poll) {
+        News.find({type: { "$regex": "Poll", "$options": "i" }, verify: true}, function (err, poll) {
             if (err) {
                 data.data = err;
             } else {

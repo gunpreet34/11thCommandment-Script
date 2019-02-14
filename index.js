@@ -28,5 +28,5 @@ app.set('views', __dirname + '/view');
 app.use('/',require('./routes'));
 
 //listen
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3001);
 console.log('Server is up and running');
