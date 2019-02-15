@@ -402,9 +402,7 @@ router.post('/resetSuccess',function (req, res) {
         let otp = req.body.otp;
         let req_id = req.body._id;
 
-
-        let passwordResetRequest = PasswordResetRequest();
-        passwordResetRequest.find({_id:req_id},function (err, request) {
+        PasswordResetRequest.findOne({_id:req_id},function (err, request) {
             if(err){
                 data.data = err;
                 res.send(data);
