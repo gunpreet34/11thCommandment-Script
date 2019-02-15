@@ -404,7 +404,7 @@ router.post('/resetSuccess',function (req, res) {
 
 
         let passwordResetRequest = PasswordResetRequest();
-        passwordResetRequest.findOne({_id:req_id},function (err, request) {
+        passwordResetRequest.find({_id:req_id},function (err, request) {
             if(err){
                 data.data = err;
                 res.send(data);
