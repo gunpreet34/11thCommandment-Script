@@ -400,7 +400,7 @@ router.post('/resetSuccess',function (req, res) {
     try {
         let password = req.body.password;
         let otp = req.body.otp;
-        let req_id = req.body.data._id;
+        let req_id = req.body._id;
 
 
         let passwordResetRequest = PasswordResetRequest();
