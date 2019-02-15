@@ -397,7 +397,7 @@ router.get('/resetPassword/:id',function (req, res) {
 //Reset Success
 router.post('/resetSuccess',function (req, res) {
     let data = {success:0,data:""};
-    console.log("data " + req.body.data);
+    console.log("data " + req.body);
     let password = req.body.data.password;
     let otp = req.body.data.otp;
     let req_id = req.body.data._id;
