@@ -401,6 +401,7 @@ router.post('/resetSuccess',function (req, res) {
         let password = req.body.password;
         let otp = req.body.otp;
         let req_id = req.body._id;
+        req_id = req_id.trim();
 
         PasswordResetRequest.findOne({_id:req_id},function (err, request) {
             if(err){
