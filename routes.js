@@ -249,7 +249,7 @@ router.post('/sendMail',function (req, res) {
                     }else{
                         data.success = 1;
                         data.data = "Mail sent successfully. Please check your inbox";
-                        let mail = "Your OTP for password change is " + otp + " . " + "Request is valid for 5 minutes. To reset password click on the link below: \n " + "https://commandment-api.herokuapp.com/resetPassword/" + savedPasswordResetRequest._id + " ." ;
+                        let mail = "Your OTP for password change is " + otp + " . " + "Request is valid for 5 minutes. To reset password click on the link below: \n " + "http://commandment-api.herokuapp.com/resetPassword/" + savedPasswordResetRequest._id + " ." ;
                         sendMail(mail,user_id);
                         res.send(data);
                     }
@@ -397,12 +397,10 @@ router.get('/resetPassword/:id',function (req, res) {
 //Reset Success
 router.post('/resetSuccess',function (req, res) {
     let data = {success:0,data:""};
-    console.log("data " + req.body);
-    let password = req.body.data.password;
-    let otp = req.body.data.otp;
+    let password = req.body.password;
+    let otp = req.body.otp;
     let req_id = req.body.data._id;
 
-    //Isse pehle
 
     let passwordResetRequest = PasswordResetRequest();
     passwordResetRequest.findOne({_id:req_id},function (err, request) {
